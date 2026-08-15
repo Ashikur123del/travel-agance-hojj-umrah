@@ -4,92 +4,329 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   FaPassport,
-  FaClock,
+  FaPlane,
   FaFileAlt,
-  FaHandshake,
-  FaGlobe,
   FaCheckCircle,
-  FaShieldAlt,
   FaUsers,
+  FaGlobeAsia,
+  FaClock,
+  FaShieldAlt,
   FaArrowRight,
-  FaPhone,
-  FaEnvelope,
+  FaHeadset,
+  FaBriefcase,
+  FaUmbrellaBeach,
 } from "react-icons/fa";
 import ServiceHero from "../ServiceHero";
 
 
-const features = [
+
+const visaServices = [
+  {
+    icon: FaUmbrellaBeach,
+    title: "Tourist Visa",
+    description:
+      "Professional tourist visa processing support for your international holiday and travel plans.",
+    href: "/services/visa-processing/tourist-visa",
+  },
+  {
+    icon: FaBriefcase,
+    title: "Work Permit",
+    description:
+      "Complete work permit assistance including document preparation and application guidance.",
+    href: "/services/visa-processing/work-permit",
+  },
   {
     icon: FaPassport,
-    title: "Tourist Visa Processing",
-    desc: "Country-wise tourist visa support for all major destinations including USA, UK, Schengen, Canada, Australia, and more.",
-    href: "/services/visa-processing/tourist-visa",
-    color: "from-amber-500 to-orange-500",
-    details: "Document checking, application submission, interview preparation",
-  },
-  {
-    icon: FaHandshake,
-    title: "Work Permit",
-    desc: "Work visa and work permit support for various countries in the Middle East, Europe, Asia, and North America.",
-    href: "/services/visa-processing/work-permit",
-    color: "from-emerald-500 to-teal-500",
-    details: "Employer coordination, contract verification, document attestation",
-  },
-  {
-    icon: FaFileAlt,
-    title: "Document Assistance",
-    desc: "Complete help with required documents – passport validity, photos, bank statements, NID, birth certificates, and more.",
-    href: "/services/visa-processing/tourist-visa",
-    color: "from-blue-500 to-cyan-500",
-    details: "Document checklist, verification, translation services",
-  },
-  {
-    icon: FaClock,
-    title: "Fast Processing",
-    desc: "Quick and reliable processing with real-time tracking and timely delivery of your visa results.",
-    href: "/services/visa-processing/tourist-visa",
-    color: "from-purple-500 to-pink-500",
-    details: "Expedited processing, priority service available",
+    title: "Visa Consultation",
+    description:
+      "Get expert guidance to understand visa requirements, eligibility, and application procedures.",
+    href: "/contact",
   },
 ];
 
+const processSteps = [
+  {
+    number: "01",
+    icon: FaHeadset,
+    title: "Free Consultation",
+    description:
+      "Discuss your travel purpose and destination with our experienced visa consultants.",
+  },
+  {
+    number: "02",
+    icon: FaFileAlt,
+    title: "Document Preparation",
+    description:
+      "We help you prepare and organize the required documents for your visa application.",
+  },
+  {
+    number: "03",
+    icon: FaPassport,
+    title: "Application Submission",
+    description:
+      "Your application is carefully checked and prepared for submission.",
+  },
+  {
+    number: "04",
+    icon: FaCheckCircle,
+    title: "Visa Decision",
+    description:
+      "We keep you updated throughout the process until the visa decision is received.",
+  },
+];
 
-const stats = [
-  { label: "Countries Served", value: "30+", icon: FaGlobe },
-  { label: "Success Rate", value: "95%", icon: FaCheckCircle },
-  { label: "Visas Processed", value: "2,500+", icon: FaUsers },
-  { label: "Trust Score", value: "4.9/5", icon: FaShieldAlt },
+const benefits = [
+  {
+    icon: FaShieldAlt,
+    title: "Trusted Service",
+    description:
+      "Reliable and transparent visa processing support from experienced professionals.",
+  },
+  {
+    icon: FaGlobeAsia,
+    title: "Multiple Destinations",
+    description:
+      "Visa assistance for different countries and travel purposes.",
+  },
+  {
+    icon: FaClock,
+    title: "Time Saving",
+    description:
+      "We simplify the application process and help you avoid unnecessary delays.",
+  },
+  {
+    icon: FaUsers,
+    title: "Expert Support",
+    description:
+      "Our team provides personalized guidance based on your travel requirements.",
+  },
+];
+
+const documents = [
+  "Valid Passport",
+  "Recent Passport Size Photograph",
+  "National ID Card",
+  "Bank Statement",
+  "Travel Itinerary",
+  "Hotel Booking",
+  "Air Ticket / Reservation",
+  "Employment or Business Documents",
 ];
 
 export default function VisaProcessingPage() {
   return (
-    <main>
-     
-      <ServiceHero     
+    <main className="bg-white">
+      {/* =====================================================
+          HERO
+      ====================================================== */}
+
+      <ServiceHero
         title="Visa Processing"
-        subtitle="Visa Services"
+        subtitle="Travel With Confidence"
         icon={<FaPassport />}
-        description="Complete visa processing services – tourist visas, work permits, and all document assistance. High success rate with quick processing and real-time tracking."
-        bgImage="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80"
+        description="Professional visa processing assistance for tourist, work, and other travel purposes. We make your visa journey easier, clearer, and more organized."
+        bgImage="https://images.unsplash.com/photo-1518391846015-55a9cc003b25?w=1920&q=80"
       />
 
-      <section className="py-12 bg-gradient-to-b from-teal-900 via-cyan-900 to-emerald-950 border-b border-white/5">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-            {stats.map((stat, index) => {
-              const Icon = stat.icon;
+      {/* =====================================================
+          INTRODUCTION
+      ====================================================== */}
+
+      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+        {/* Background Decoration */}
+
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-sky-300/30 blur-3xl" />
+
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-indigo-300/25 blur-3xl" />
+
+          <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-blue-200/30 blur-3xl" />
+
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.12),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(99,102,241,0.10),transparent_30%)]" />
+        </div>
+
+        <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            {/* Left */}
+
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-widest text-sky-600">
+                Visa Assistance
+              </span>
+
+              <h2 className="mt-4 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
+                Your Journey Starts With
+                <span className="block bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                  The Right Visa
+                </span>
+              </h2>
+
+              <p className="mt-5 text-base leading-relaxed text-slate-600 md:text-lg">
+                Applying for a visa can be confusing and time-consuming. Our
+                professional visa processing team helps you understand the
+                requirements and prepare your application properly.
+              </p>
+
+              <p className="mt-4 text-base leading-relaxed text-slate-500 md:text-lg">
+                From tourist visas to work permits, we provide organized
+                assistance so you can focus on planning your journey with
+                confidence.
+              </p>
+
+              <Link
+                href="/contact"
+                className="group mt-7 inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition-all duration-300 hover:from-amber-400 hover:to-orange-400 hover:shadow-xl"
+              >
+                Get Visa Assistance
+                <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </motion.div>
+
+            {/* Right */}
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.15 }}
+              viewport={{ once: true }}
+              className="grid grid-cols-2 gap-4"
+            >
+              {[
+                {
+                  icon: FaPassport,
+                  value: "Visa",
+                  label: "Processing Support",
+                },
+                {
+                  icon: FaGlobeAsia,
+                  value: "Multiple",
+                  label: "Destinations",
+                },
+                {
+                  icon: FaUsers,
+                  value: "Expert",
+                  label: "Consultation",
+                },
+                {
+                  icon: FaShieldAlt,
+                  value: "Trusted",
+                  label: "Service",
+                },
+              ].map((item, index) => {
+                const Icon = item.icon;
+
+                return (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    transition={{
+                      duration: 0.5,
+                      delay: index * 0.08,
+                    }}
+                    viewport={{ once: true }}
+                    whileHover={{ y: -6 }}
+                    className="rounded-2xl border border-slate-200 bg-white/80 p-6 text-center shadow-lg shadow-slate-200/40 backdrop-blur-xl"
+                  >
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-sky-100 to-indigo-100">
+                      <Icon className="h-7 w-7 text-sky-600" />
+                    </div>
+
+                    <h3 className="mt-4 text-xl font-extrabold text-slate-900">
+                      {item.value}
+                    </h3>
+
+                    <p className="mt-1 text-sm text-slate-500">
+                      {item.label}
+                    </p>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          VISA SERVICES
+      ====================================================== */}
+
+      <section className="relative overflow-hidden bg-gradient-to-b from-white via-sky-50 to-indigo-50 py-16 md:py-24">
+        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Heading */}
+
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mx-auto mb-12 max-w-3xl text-center"
+          >
+            <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
+              Our Visa Services
+            </span>
+
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl md:text-5xl">
+              Visa Solutions For
+              <span className="block bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                Every Journey
+              </span>
+            </h2>
+
+            <p className="mt-4 text-slate-500 md:text-lg">
+              Choose the visa service that matches your travel purpose and let
+              our team guide you through the process.
+            </p>
+          </motion.div>
+
+          {/* Cards */}
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {visaServices.map((service, index) => {
+              const Icon = service.icon;
+
               return (
                 <motion.div
-                  key={index}
-                  initial={{ opacity: 0, y: 20 }}
+                  key={service.title}
+                  initial={{ opacity: 0, y: 25 }}
                   whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1,
+                  }}
                   viewport={{ once: true }}
-                  className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-4 text-center hover:border-amber-400/40 transition-all"
+                  whileHover={{ y: -8 }}
                 >
-                  <Icon className="w-8 h-8 text-amber-400 mx-auto mb-2" />
-                  <div className="text-2xl sm:text-3xl font-extrabold text-white">{stat.value}</div>
-                  <p className="text-teal-200/50 text-xs sm:text-sm font-medium">{stat.label}</p>
+                  <Link
+                    href={service.href}
+                    className="group block h-full"
+                  >
+                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 shadow-lg shadow-slate-200/40 transition-all duration-300 hover:border-sky-300 hover:shadow-xl hover:shadow-sky-200/40">
+                      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-sky-100 blur-2xl transition-all duration-300 group-hover:bg-amber-100" />
+
+                      <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100">
+                        <Icon className="h-8 w-8 text-sky-600 transition-transform duration-300 group-hover:scale-110" />
+                      </div>
+
+                      <h3 className="relative mt-6 text-xl font-bold text-slate-900">
+                        {service.title}
+                      </h3>
+
+                      <p className="relative mt-3 text-sm leading-relaxed text-slate-500">
+                        {service.description}
+                      </p>
+
+                      <div className="relative mt-6 flex items-center gap-2 text-sm font-semibold text-sky-600">
+                        Learn More
+                        <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+                      </div>
+                    </div>
+                  </Link>
                 </motion.div>
               );
             })}
@@ -97,161 +334,247 @@ export default function VisaProcessingPage() {
         </div>
       </section>
 
-      <section className="py-16 md:py-24 bg-gradient-to-b from-cyan-900 via-emerald-950 to-teal-900">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Our Visa{" "}
-              <span className="bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
-                Services
+      {/* =====================================================
+          PROCESS
+      ====================================================== */}
+
+      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mx-auto mb-12 max-w-3xl text-center"
+          >
+            <span className="inline-block rounded-full bg-indigo-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-indigo-600">
+              How It Works
+            </span>
+
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
+              Simple & Easy
+              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                {" "}
+                Visa Process
               </span>
             </h2>
-            <p className="mt-2 text-teal-100/70 text-lg max-w-2xl mx-auto">
-              Comprehensive visa solutions tailored to your needs
-            </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {features.map((item, index) => {
-              const Icon = item.icon;
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {processSteps.map((step, index) => {
+              const Icon = step.icon;
+
               return (
-                <Link href={item.href} key={index}>
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.4, delay: index * 0.1 }}
-                    viewport={{ once: true }}
-                    className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6 hover:border-amber-400/50 transition-all group h-full"
-                  >
-                    <div className="flex items-start gap-4">
-                      <div
-                        className={`w-14 h-14 rounded-full bg-gradient-to-br ${item.color}/20 flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform`}
-                      >
-                        <Icon className="w-7 h-7 text-amber-400" />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-white font-bold text-lg group-hover:text-amber-400 transition-colors">
-                          {item.title}
-                        </h3>
-                        <p className="text-teal-100/70 text-sm mt-1 leading-relaxed">
-                          {item.desc}
-                        </p>
-                        <p className="text-teal-200/40 text-xs mt-2">
-                          🔹 {item.details}
-                        </p>
-                        <span className="text-amber-400 text-xs font-medium mt-3 inline-block group-hover:translate-x-1 transition-transform">
-                          Learn More →
-                        </span>
-                      </div>
+                <motion.div
+                  key={step.number}
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.1,
+                  }}
+                  viewport={{ once: true }}
+                  className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-md"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-indigo-100">
+                      <Icon className="h-6 w-6 text-sky-600" />
                     </div>
-                  </motion.div>
-                </Link>
+
+                    <span className="text-3xl font-black text-slate-100">
+                      {step.number}
+                    </span>
+                  </div>
+
+                  <h3 className="mt-5 text-lg font-bold text-slate-900">
+                    {step.title}
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                    {step.description}
+                  </p>
+                </motion.div>
               );
             })}
           </div>
         </div>
       </section>
 
-      {/* ভিসা প্রক্রিয়ার ধাপসমূহ */}
-      <section className="py-16 md:py-24 bg-gradient-to-b from-teal-900 via-cyan-900 to-emerald-950">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white">
-              Visa Processing{" "}
-              <span className="bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
-                Steps
-              </span>
-            </h2>
-            <p className="mt-2 text-teal-100/70 text-lg">
-              Our simple 5-step process for visa processing
-            </p>
-          </div>
+      {/* =====================================================
+          REQUIRED DOCUMENTS
+      ====================================================== */}
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            {[
-              "Collect Documents",
-              "Verify Documents",
-              "Submit Application",
-              "Track Status",
-              "Receive Result",
-            ].map((step, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: index * 0.08 }}
-                viewport={{ once: true }}
-                className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-5 text-center hover:border-amber-400/40 transition-all"
+      <section className="relative overflow-hidden bg-white py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid items-center gap-12 lg:grid-cols-2">
+            {/* Left */}
+
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+            >
+              <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
+                Documents
+              </span>
+
+              <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
+                Prepare Your
+                <span className="block bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                  Required Documents
+                </span>
+              </h2>
+
+              <p className="mt-4 text-base leading-relaxed text-slate-500 md:text-lg">
+                Required documents may vary depending on the destination and
+                visa type. Our team will guide you with the appropriate
+                checklist for your application.
+              </p>
+
+              <Link
+                href="/contact"
+                className="mt-6 inline-flex items-center gap-2 font-semibold text-sky-600 transition-colors hover:text-indigo-600"
               >
-                <div className="w-12 h-12 mx-auto rounded-full bg-amber-400/20 flex items-center justify-center mb-3">
-                  <span className="text-amber-400 font-bold text-xl">{index + 1}</span>
-                </div>
-                <p className="text-teal-100/80 text-sm font-medium">{step}</p>
-              </motion.div>
-            ))}
+                Ask About Documents
+                <FaArrowRight />
+              </Link>
+            </motion.div>
+
+            {/* Right */}
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7 }}
+              viewport={{ once: true }}
+              className="grid grid-cols-1 gap-3 sm:grid-cols-2"
+            >
+              {documents.map((document, index) => (
+                <motion.div
+                  key={document}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{
+                    duration: 0.4,
+                    delay: index * 0.05,
+                  }}
+                  viewport={{ once: true }}
+                  className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:border-sky-300 hover:bg-sky-50"
+                >
+                  <FaCheckCircle className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+
+                  <span className="text-sm font-medium text-slate-700">
+                    {document}
+                  </span>
+                </motion.div>
+              ))}
+            </motion.div>
           </div>
         </div>
       </section>
 
-      {/* যোগাযোগ ও সাহায্য */}
-      <section className="py-16 md:py-24 bg-gradient-to-b from-cyan-900 via-emerald-950 to-teal-900">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* ভিসা টিপস */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-              <h3 className="text-white font-bold text-xl mb-4">💡 Visa Tips</h3>
-              <ul className="space-y-3 text-teal-100/70 text-sm">
-                <li className="flex items-start gap-3">
-                  <span className="text-amber-400 font-bold">✓</span>
-                  <span>Apply at least 4-6 weeks before your travel date.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-amber-400 font-bold">✓</span>
-                  <span>Ensure your passport is valid for at least 6 months.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-amber-400 font-bold">✓</span>
-                  <span>Check specific country requirements – some need extra documents.</span>
-                </li>
-                <li className="flex items-start gap-3">
-                  <span className="text-amber-400 font-bold">✓</span>
-                  <span>Keep digital and physical copies of all documents.</span>
-                </li>
-              </ul>
-            </div>
+      {/* =====================================================
+          WHY CHOOSE US
+      ====================================================== */}
 
-            {/* যোগাযোগ */}
-            <div className="bg-white/5 backdrop-blur-sm border border-white/10 rounded-2xl p-6">
-              <h3 className="text-white font-bold text-xl mb-4">📞 Need Assistance?</h3>
-              <p className="text-teal-100/70 text-sm mb-4">
-                Our visa experts are ready to guide you through the entire process.
-              </p>
-              <div className="space-y-3 text-sm">
-                <div className="flex items-center gap-3 text-teal-100/70">
-                  <FaPhone className="text-amber-400" />
-                  <span>880 1884-694337</span>
-                </div>
-                <div className="flex items-center gap-3 text-teal-100/70">
-                  <FaEnvelope className="text-amber-400" />
-                  <span>akinaitravelsbd@gmail.com</span>
-                </div>
-              </div>
-              <div className="mt-4 flex flex-wrap gap-3">
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold px-5 py-2.5 rounded-xl shadow-lg shadow-amber-500/30 transition-all text-sm"
+      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="mx-auto mb-12 max-w-3xl text-center"
+          >
+            <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
+              Why Choose Us
+            </span>
+
+            <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
+              Visa Processing With
+              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                {" "}
+                Confidence
+              </span>
+            </h2>
+          </motion.div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {benefits.map((benefit, index) => {
+              const Icon = benefit.icon;
+
+              return (
+                <motion.div
+                  key={benefit.title}
+                  initial={{ opacity: 0, y: 25 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{
+                    duration: 0.5,
+                    delay: index * 0.08,
+                  }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -6 }}
+                  className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-lg shadow-slate-200/30"
                 >
-                  Contact Us <FaArrowRight className="w-4 h-4" />
-                </Link>
-                <Link
-                  href="/services/visa-processing/tourist-visa"
-                  className="inline-flex items-center gap-2 border border-white/30 hover:bg-white/10 text-white font-semibold px-5 py-2.5 rounded-xl transition-all text-sm"
-                >
-                  Tourist Visa →
-                </Link>
-              </div>
-            </div>
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-sky-100 to-indigo-100">
+                    <Icon className="h-7 w-7 text-sky-600" />
+                  </div>
+
+                  <h3 className="mt-5 text-lg font-bold text-slate-900">
+                    {benefit.title}
+                  </h3>
+
+                  <p className="mt-2 text-sm leading-relaxed text-slate-500">
+                    {benefit.description}
+                  </p>
+                </motion.div>
+              );
+            })}
           </div>
+        </div>
+      </section>
+
+      {/* =====================================================
+          CTA
+      ====================================================== */}
+
+      <section className="relative overflow-hidden bg-gradient-to-r from-indigo-950 via-blue-900 to-cyan-900 py-16 md:py-20">
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
+
+          <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl" />
+        </div>
+
+        <div className="container relative z-10 mx-auto px-4 text-center sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            viewport={{ once: true }}
+          >
+            <FaPlane className="mx-auto h-10 w-10 text-amber-400" />
+
+            <h2 className="mt-5 text-3xl font-extrabold text-white sm:text-4xl md:text-5xl">
+              Ready to Start Your
+              <span className="block bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
+                Visa Journey?
+              </span>
+            </h2>
+
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-sky-100/70 md:text-lg">
+              Contact our team today and get professional guidance for your
+              visa application.
+            </p>
+
+            <Link
+              href="/contact"
+              className="group mt-7 inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-3.5 font-bold text-slate-950 shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-400 hover:to-orange-400 hover:shadow-xl"
+            >
+              Contact Us Today
+              <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
+            </Link>
+          </motion.div>
         </div>
       </section>
     </main>
