@@ -14,45 +14,45 @@ import {
 const insights = [
   {
     id: 1,
-    category: "TOP & TRACK",
+    category: "UMRAH GUIDE",
     categoryColor: "from-amber-500 to-orange-500",
-    title: "The Art of Minimalist Packing for Long Hauls",
+    title: "Essential Preparation Steps for Your First Umrah Journey",
     excerpt:
-      "Traveling for two weeks with just a carry-on is not only possible but liberating. We share expert tips on capsule wardrobes, layering techniques, and the must-have travel accessories that keep you stylish and comfortable without overpacking. Say goodbye to baggage fees and hello to stress-free travel.",
+      "Performing Umrah is a sacred spiritual journey. Learn about the key Ihram rules, required travel documents, health preparations, and step-by-step rituals to ensure a peaceful and meaningful pilgrimage to Makkah and Madinah.",
     image:
-      "https://images.unsplash.com/photo-1520970014086-2208d157c9e2?w=800&q=85",
-    date: "June 15, 2026",
+      "https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=85",
+    date: "August 10, 2026",
     readTime: "5 min read",
-    author: "Emma Watson",
-    href: "/news/minimalist-packing",
+    author: "Islamic Travel Desk",
+    href: "/news/umrah-preparation-guide",
   },
   {
     id: 2,
-    category: "DESTINATION",
+    category: "HAJJ INSIGHTS",
     categoryColor: "from-emerald-500 to-teal-500",
-    title: "Hidden Gems: Greece Beyond Santorini",
+    title: "Understanding Hajj Rites: Day-by-Day Pilgrim Guide",
     excerpt:
-      "While Santorini's sunsets are legendary, Greece offers quieter treasures. Explore the untouched beauty of Milos with its lunar landscapes and Sifnos with its authentic tavernas. Discover ancient ruins, secluded coves, and the warm hospitality that makes these islands the true essence of Greek charm.",
+      "A comprehensive breakdown of Hajj rituals from Mina to Arafat and Muzdalifah. Understand the spiritual significance of each rite and get practical tips on staying healthy and focused during peak pilgrimage days.",
     image:
-      "https://images.unsplash.com/photo-1533105079780-92b9be482077?w=800&q=85",
-    date: "June 12, 2026",
-    readTime: "4 min read",
-    author: "James Carter",
-    href: "/news/greece-hidden-gems",
+      "https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800&q=85",
+    date: "August 05, 2026",
+    readTime: "6 min read",
+    author: "Madina Guidance Team",
+    href: "/news/hajj-rites-guide",
   },
   {
     id: 3,
-    category: "INDUSTRY NEWS",
+    category: "TRAVEL TIPS",
     categoryColor: "from-purple-500 to-pink-500",
-    title: "New Direct Routes for 2026 Expeditions",
+    title: "Packing Essentials for Makkah & Madinah Pilgrims",
     excerpt:
-      "Major airlines have announced new non-stop flights connecting key cities in South America and Southeast Asia. This opens up exciting opportunities for travelers seeking adventure, cultural immersion, and business growth. Learn about the new routes, estimated fares, and what this means for your travel plans.",
+      "Avoid overpacking while ensuring you have everything needed for comfort during Tawaaf and Ziyarat. From comfortable footwear to essential personal care and Ihram guidelines, here is your definitive packing list.",
     image:
-      "https://images.unsplash.com/photo-1436491865332-7a61a109cc05?w=800&q=85",
-    date: "June 10, 2026",
-    readTime: "3 min read",
-    author: "Rachel Lee",
-    href: "/news/new-direct-routes",
+      "https://images.unsplash.com/photo-1565552070098-0120800b6f50?w=800&q=85",
+    date: "July 28, 2026",
+    readTime: "4 min read",
+    author: "Madina Travel Advisory",
+    href: "/news/pilgrim-packing-essentials",
   },
 ];
 
@@ -95,19 +95,8 @@ const TravelInsights = () => {
           strokeDasharray="3 14"
         />
 
-        <circle
-          cx="600"
-          cy="550"
-          r="5"
-          fill="#0EA5E9"
-        />
-
-        <circle
-          cx="950"
-          cy="350"
-          r="5"
-          fill="#6366F1"
-        />
+        <circle cx="600" cy="550" r="5" fill="#0EA5E9" />
+        <circle cx="950" cy="350" r="5" fill="#6366F1" />
       </svg>
 
       {/* =====================================================
@@ -127,32 +116,26 @@ const TravelInsights = () => {
           className="mb-12 text-center"
         >
           {/* Small Label */}
-
           <div className="mb-4 flex items-center justify-center gap-3">
             <span className="h-px w-8 bg-gradient-to-r from-transparent to-sky-500" />
-
             <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
-              Travel Insights
+              Islamic Guidance & News
             </p>
-
             <span className="h-px w-8 bg-gradient-to-l from-transparent to-sky-500" />
           </div>
 
           {/* Heading */}
-
           <h2 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
-            Stay updated with the latest trends,
+            Stay informed with expert guidance,
             <br />
             <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
-              destination guides & travel tips
+              Hajj & Umrah tips and spiritual insights
             </span>
           </h2>
 
           {/* Description */}
-
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-500 sm:text-lg">
-            Discover expert travel stories, destination inspiration, and
-            practical tips from our expert explorers.
+            Read practical pilgrim advice, visa updates, and spiritual articles provided by Madina Hajj & Umrah Travels.
           </p>
         </motion.div>
 
@@ -176,10 +159,7 @@ const TravelInsights = () => {
               }}
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-lg shadow-slate-200/60 transition-all duration-300 hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100"
             >
-              {/* =================================================
-                  IMAGE
-              ================================================== */}
-
+              {/* IMAGE */}
               <Link href={item.href}>
                 <div className="relative h-56 overflow-hidden sm:h-60">
                   <Image
@@ -191,11 +171,9 @@ const TravelInsights = () => {
                   />
 
                   {/* Image overlay */}
-
                   <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
 
                   {/* Category Badge */}
-
                   <div
                     className={`absolute left-4 top-4 rounded-full bg-gradient-to-r ${item.categoryColor} px-3 py-1.5 text-[10px] font-bold uppercase tracking-wide text-white shadow-lg`}
                   >
@@ -204,13 +182,9 @@ const TravelInsights = () => {
                 </div>
               </Link>
 
-              {/* =================================================
-                  CONTENT
-              ================================================== */}
-
+              {/* CONTENT */}
               <div className="flex flex-1 flex-col p-6">
                 {/* Meta Information */}
-
                 <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-2 text-[10px] text-slate-400">
                   <span className="flex items-center gap-1.5">
                     <FaCalendarAlt className="h-3 w-3 text-sky-500" />
@@ -229,7 +203,6 @@ const TravelInsights = () => {
                 </div>
 
                 {/* Title */}
-
                 <Link href={item.href}>
                   <h3 className="line-clamp-2 text-xl font-bold leading-tight text-slate-800 transition-colors duration-300 group-hover:text-sky-700">
                     {item.title}
@@ -237,25 +210,21 @@ const TravelInsights = () => {
                 </Link>
 
                 {/* Excerpt */}
-
                 <p className="mt-3 line-clamp-4 flex-1 text-sm leading-relaxed text-slate-500">
                   {item.excerpt}
                 </p>
 
                 {/* Continue Reading */}
-
                 <Link
                   href={item.href}
                   className="group/link mt-5 inline-flex items-center gap-2 border-t border-slate-100 pt-4 text-sm font-semibold text-sky-600 transition-colors hover:text-sky-800"
                 >
-                  Continue Reading
-
+                  Read Full Article
                   <FaArrowRight className="h-4 w-4 transition-transform duration-300 group-hover/link:translate-x-1" />
                 </Link>
               </div>
 
-              {/* Subtle hover glow */}
-
+              {/* Hover glow */}
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-400/[0.03] via-transparent to-indigo-400/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </motion.article>
           ))}
@@ -279,8 +248,7 @@ const TravelInsights = () => {
             href="/news"
             className="group inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-3.5 text-sm font-bold text-white shadow-lg shadow-amber-500/20 transition-all duration-300 hover:from-amber-400 hover:to-orange-400 hover:shadow-xl hover:shadow-amber-500/30"
           >
-            View All Insights
-
+            View All Articles
             <FaArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </motion.div>

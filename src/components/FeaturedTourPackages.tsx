@@ -17,70 +17,70 @@ import { MdLocationOn } from "react-icons/md";
 const tours = [
   {
     id: 1,
-    title: "Amalfi Coast Wonders",
-    location: "Italy",
+    title: "Executive Umrah Package",
+    location: "Makkah & Madinah",
     description:
-      "Experience the breathtaking beauty of Italy's Amalfi Coast with stunning cliffside villages, Mediterranean cuisine, and crystal-clear waters.",
+      "Experience a spiritual journey with 5-star hotel accommodations close to Haram Sharif, direct flights, and full guidance.",
     image:
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=85",
-    duration: "7 Days",
-    groupSize: "Max 12",
-    included: ["Hotel", "Guide", "Meals", "Transport"],
-    available: "May – October",
+      "https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=85",
+    duration: "14 Days",
+    groupSize: "Family / Group",
+    included: ["5★ Hotel", "Visa", "Meals", "Transport"],
+    available: "All Year Round",
     rating: 4.9,
-    reviews: 128,
+    reviews: 154,
     badge: "Popular",
     badgeColor: "from-amber-500 to-orange-500",
   },
   {
     id: 2,
-    title: "Icelandic Auroras",
-    location: "Iceland",
+    title: "Economy Umrah Package",
+    location: "Makkah & Madinah",
     description:
-      "Chase the magical Northern Lights across Iceland's glaciers, volcanoes, and black sand beaches. A once-in-a-lifetime adventure.",
+      "Affordable and comfortable Umrah package designed for budget travelers with essential amenities and dedicated service.",
     image:
-      "https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=800&q=85",
-    duration: "5 Days",
-    groupSize: "Max 10",
-    included: ["Hotel", "Guide", "Transport", "Winter gear"],
-    available: "October – March",
+      "https://images.unsplash.com/photo-1565552070098-0120800b6f50?w=800&q=85",
+    duration: "10 Days",
+    groupSize: "Max 30",
+    included: ["3★ Hotel", "Visa", "Transport", "Ziyarat"],
+    available: "Monthly Batches",
     rating: 4.8,
-    reviews: 96,
-    badge: "New",
+    reviews: 112,
+    badge: "Best Value",
     badgeColor: "from-emerald-500 to-teal-500",
   },
   {
     id: 3,
-    title: "Bali Tropical Escape",
-    location: "Indonesia",
+    title: "Premium Hajj Package 2027",
+    location: "Saudi Arabia",
     description:
-      "Immerse yourself in Bali's lush rice terraces, ancient temples, and vibrant culture. Perfect for relaxation and spiritual renewal.",
+      "Comprehensive VIP Hajj services including VIP tents in Mina, short walking distance to Jamarat, and expert guides.",
     image:
-      "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=85",
-    duration: "6 Days",
-    groupSize: "Max 15",
-    included: ["Hotel", "Guide", "Meals", "Yoga sessions"],
-    available: "April – October",
-    rating: 4.7,
-    reviews: 203,
-    badge: "Best Seller",
+      "https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=800&q=85",
+    duration: "30 Days",
+    groupSize: "Limited Seats",
+    included: ["VIP Tents", "Buffet", "Guide", "Flight"],
+    available: "Hajj Season",
+    rating: 5.0,
+    reviews: 88,
+    badge: "Exclusive",
     badgeColor: "from-purple-500 to-pink-500",
   },
   {
     id: 4,
-    title: "Swiss Alps Adventure",
-    location: "Switzerland",
+    title: "Ramadan Special Umrah",
+    location: "Makkah & Madinah",
     description:
-      "Conquer the majestic Swiss Alps with guided hikes, scenic train rides, and cozy mountain lodges. Experience the peak of European beauty.",
+      "Spend the holy month of Ramadan in Makkah and Madinah. Special arrangements for Iftar, Sahoor, and Taraweeh prayers.",
     image:
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=85",
-    duration: "8 Days",
-    groupSize: "Max 8",
-    included: ["Hotel", "Guide", "Meals", "Train passes"],
-    available: "June – September",
+      "https://images.unsplash.com/photo-1580418827493-f2b22c0a76cb?w=800&q=85",
+    duration: "15 Days",
+    groupSize: "Max 20",
+    included: ["Hotel", "Visa", "Iftar/Sahoor", "Ziyarat"],
+    available: "Ramadan Month",
     rating: 4.9,
-    reviews: 87,
-    badge: "Luxury",
+    reviews: 95,
+    badge: "Special",
     badgeColor: "from-blue-500 to-cyan-500",
   },
 ];
@@ -94,11 +94,8 @@ const FeaturedTourPackages = () => {
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-sky-300/25 blur-3xl" />
-
         <div className="absolute -right-40 top-1/4 h-[450px] w-[450px] rounded-full bg-indigo-300/20 blur-3xl" />
-
         <div className="absolute bottom-[-180px] left-1/3 h-[400px] w-[400px] rounded-full bg-blue-200/25 blur-3xl" />
-
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.10),transparent_30%),radial-gradient(circle_at_80%_70%,rgba(99,102,241,0.08),transparent_30%)]" />
       </div>
 
@@ -132,40 +129,33 @@ const FeaturedTourPackages = () => {
         >
           <div className="text-center sm:text-left">
             {/* Small label */}
-
             <div className="mb-3 flex items-center justify-center gap-3 sm:justify-start">
               <span className="h-px w-8 bg-gradient-to-r from-sky-500 to-amber-400" />
-
               <p className="font-mono text-xs font-semibold uppercase tracking-[0.25em] text-sky-600">
-                Selected For You
+                Sacred Journeys
               </p>
-
               <span className="h-px w-8 bg-gradient-to-r from-amber-400 to-sky-500 sm:hidden" />
             </div>
 
             {/* Heading */}
-
             <h2 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
-              Featured Tour{" "}
+              Featured{" "}
               <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
                 Packages
               </span>
             </h2>
 
             <p className="mt-3 max-w-2xl text-sm leading-relaxed text-slate-500 sm:text-base">
-              Discover hand-picked destinations, unforgettable experiences,
-              and carefully planned adventures made for curious travelers.
+              Embark on your sacred pilgrimage with Madina Hajj & Umrah Travels. Carefully tailored packages for a hassle-free spiritual experience.
             </p>
           </div>
 
           {/* View All */}
-
           <Link
-            href="/services/tour-package"
+            href="/services"
             className="group inline-flex shrink-0 items-center gap-2 rounded-full border border-sky-200 bg-white/80 px-5 py-2.5 text-sm font-semibold text-sky-700 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-sky-300 hover:bg-sky-50 hover:text-sky-800 hover:shadow-md"
           >
-            View All Destinations
-
+            View All Packages
             <FaArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </motion.div>
@@ -190,10 +180,7 @@ const FeaturedTourPackages = () => {
               }}
               className="group relative flex flex-col overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-lg shadow-slate-200/60 transition-all duration-300 hover:border-sky-300 hover:shadow-2xl hover:shadow-sky-100"
             >
-              {/* =================================================
-                  IMAGE
-              ================================================== */}
-
+              {/* IMAGE */}
               <div className="relative h-52 overflow-hidden">
                 <Image
                   src={tour.image}
@@ -203,12 +190,10 @@ const FeaturedTourPackages = () => {
                   className="object-cover transition-transform duration-700 group-hover:scale-110"
                 />
 
-                {/* Image overlay */}
-
+                {/* Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
 
                 {/* Badge */}
-
                 <div
                   className={`absolute left-3 top-3 rounded-full bg-gradient-to-r ${tour.badgeColor} px-3 py-1 text-[10px] font-bold uppercase tracking-wide text-white shadow-lg`}
                 >
@@ -216,34 +201,25 @@ const FeaturedTourPackages = () => {
                 </div>
 
                 {/* Location */}
-
                 <div className="absolute bottom-3 left-3 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-md backdrop-blur-sm">
                   <MdLocationOn className="h-4 w-4 text-amber-500" />
                   {tour.location}
                 </div>
               </div>
 
-              {/* =================================================
-                  CONTENT
-              ================================================== */}
-
+              {/* CONTENT */}
               <div className="flex flex-1 flex-col p-5">
                 {/* Title */}
-
                 <h3 className="text-lg font-bold leading-tight text-slate-800 transition-colors duration-300 group-hover:text-sky-700">
                   {tour.title}
                 </h3>
 
                 {/* Description */}
-
                 <p className="mt-2 line-clamp-2 flex-1 text-xs leading-relaxed text-slate-500">
                   {tour.description}
                 </p>
 
-                {/* =================================================
-                    META INFO
-                ================================================== */}
-
+                {/* META INFO */}
                 <div className="mt-4 grid grid-cols-2 gap-2 border-y border-slate-100 py-3 text-[11px] text-slate-500">
                   <span className="flex items-center gap-1.5">
                     <FaUsers className="h-3 w-3 text-sky-500" />
@@ -256,10 +232,7 @@ const FeaturedTourPackages = () => {
                   </span>
                 </div>
 
-                {/* =================================================
-                    INCLUDED
-                ================================================== */}
-
+                {/* INCLUDED */}
                 <div className="mt-3 flex flex-wrap gap-1.5">
                   {tour.included.map((item, idx) => (
                     <span
@@ -271,10 +244,7 @@ const FeaturedTourPackages = () => {
                   ))}
                 </div>
 
-                {/* =================================================
-                    RATING
-                ================================================== */}
-
+                {/* RATING */}
                 <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3">
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-0.5">
@@ -300,10 +270,7 @@ const FeaturedTourPackages = () => {
                   </span>
                 </div>
 
-                {/* =================================================
-                    BOOK BUTTON
-                ================================================== */}
-
+                {/* BOOK BUTTON */}
                 <Link
                   href="/contact"
                   className="mt-4 block w-full rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 py-2.5 text-center text-sm font-bold text-white shadow-lg shadow-amber-500/20 transition-all duration-300 hover:from-amber-400 hover:to-orange-400 hover:shadow-xl hover:shadow-amber-500/30"
@@ -312,8 +279,7 @@ const FeaturedTourPackages = () => {
                 </Link>
               </div>
 
-              {/* Subtle hover glow */}
-
+              {/* Hover glow */}
               <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-sky-400/[0.03] via-transparent to-indigo-400/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             </motion.div>
           ))}

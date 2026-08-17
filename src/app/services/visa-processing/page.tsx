@@ -18,8 +18,6 @@ import {
 } from "react-icons/fa";
 import ServiceHero from "../ServiceHero";
 
-
-
 const visaServices = [
   {
     icon: FaUmbrellaBeach,
@@ -119,7 +117,6 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           HERO
       ====================================================== */}
-
       <ServiceHero
         title="Visa Processing"
         subtitle="Travel With Confidence"
@@ -131,37 +128,34 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           INTRODUCTION
       ====================================================== */}
-
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
         {/* Background Decoration */}
-
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-sky-300/30 blur-3xl" />
-
-          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-indigo-300/25 blur-3xl" />
-
-          <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-blue-200/30 blur-3xl" />
-
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.12),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(99,102,241,0.10),transparent_30%)]" />
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+          <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-emerald-100/40 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(245,158,11,0.08),transparent_30%)]" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             {/* Left */}
-
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7 }}
               viewport={{ once: true }}
             >
-              <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-sm font-semibold uppercase tracking-widest text-sky-600">
-                Visa Assistance
-              </span>
+              <div className="mb-3 flex items-center gap-3 font-mono text-xs tracking-[0.25em]">
+                <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
+                <p className="bg-gradient-to-r from-emerald-700 to-amber-600 bg-clip-text font-semibold uppercase text-transparent">
+                  Visa Assistance
+                </p>
+              </div>
 
               <h2 className="mt-4 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
-                Your Journey Starts With
-                <span className="block bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+                Your Journey Starts With{" "}
+                <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                   The Right Visa
                 </span>
               </h2>
@@ -180,7 +174,7 @@ export default function VisaProcessingPage() {
 
               <Link
                 href="/contact"
-                className="group mt-7 inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-3 font-bold text-slate-950 shadow-lg shadow-amber-500/20 transition-all duration-300 hover:from-amber-400 hover:to-orange-400 hover:shadow-xl"
+                className="group mt-7 inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-600 to-amber-600 px-6 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:from-emerald-700 hover:to-amber-700 hover:shadow-xl hover:shadow-emerald-600/30"
               >
                 Get Visa Assistance
                 <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -188,7 +182,6 @@ export default function VisaProcessingPage() {
             </motion.div>
 
             {/* Right */}
-
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -231,10 +224,10 @@ export default function VisaProcessingPage() {
                     }}
                     viewport={{ once: true }}
                     whileHover={{ y: -6 }}
-                    className="rounded-2xl border border-slate-200 bg-white/80 p-6 text-center shadow-lg shadow-slate-200/40 backdrop-blur-xl"
+                    className="rounded-2xl border border-slate-200/80 bg-white/80 p-6 text-center shadow-lg shadow-slate-200/40 backdrop-blur-xl transition-colors duration-300 hover:border-emerald-300"
                   >
-                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-sky-100 to-indigo-100">
-                      <Icon className="h-7 w-7 text-sky-600" />
+                    <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-amber-50 text-emerald-600 border border-emerald-100/60">
+                      <Icon className="h-7 w-7 text-emerald-600" />
                     </div>
 
                     <h3 className="mt-4 text-xl font-extrabold text-slate-900">
@@ -255,11 +248,9 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           VISA SERVICES
       ====================================================== */}
-
-      <section className="relative overflow-hidden bg-gradient-to-b from-white via-sky-50 to-indigo-50 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-white py-16 md:py-24 border-b border-slate-100">
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           {/* Heading */}
-
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -267,13 +258,17 @@ export default function VisaProcessingPage() {
             viewport={{ once: true }}
             className="mx-auto mb-12 max-w-3xl text-center"
           >
-            <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
-              Our Visa Services
-            </span>
+            <div className="mb-3 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
+              <p className="bg-gradient-to-r from-emerald-700 to-amber-600 bg-clip-text font-semibold uppercase text-transparent">
+                Our Visa Services
+              </p>
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
+            </div>
 
             <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl md:text-5xl">
-              Visa Solutions For
-              <span className="block bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+              Visa Solutions For{" "}
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Every Journey
               </span>
             </h2>
@@ -285,7 +280,6 @@ export default function VisaProcessingPage() {
           </motion.div>
 
           {/* Cards */}
-
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             {visaServices.map((service, index) => {
               const Icon = service.icon;
@@ -306,14 +300,14 @@ export default function VisaProcessingPage() {
                     href={service.href}
                     className="group block h-full"
                   >
-                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-200 bg-white p-7 shadow-lg shadow-slate-200/40 transition-all duration-300 hover:border-sky-300 hover:shadow-xl hover:shadow-sky-200/40">
-                      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-sky-100 blur-2xl transition-all duration-300 group-hover:bg-amber-100" />
+                    <div className="relative h-full overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-7 shadow-lg shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60">
+                      <div className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-emerald-50 blur-2xl transition-all duration-300 group-hover:bg-amber-100/60" />
 
-                      <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-100 to-indigo-100">
-                        <Icon className="h-8 w-8 text-sky-600 transition-transform duration-300 group-hover:scale-110" />
+                      <div className="relative flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-amber-50 border border-emerald-100">
+                        <Icon className="h-8 w-8 text-emerald-600 transition-transform duration-300 group-hover:scale-110" />
                       </div>
 
-                      <h3 className="relative mt-6 text-xl font-bold text-slate-900">
+                      <h3 className="relative mt-6 text-xl font-bold text-slate-900 transition-colors duration-300 group-hover:text-emerald-700">
                         {service.title}
                       </h3>
 
@@ -321,7 +315,7 @@ export default function VisaProcessingPage() {
                         {service.description}
                       </p>
 
-                      <div className="relative mt-6 flex items-center gap-2 text-sm font-semibold text-sky-600">
+                      <div className="relative mt-6 flex items-center gap-2 text-sm font-semibold text-emerald-600 transition-colors duration-300 group-hover:text-amber-600">
                         Learn More
                         <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />
                       </div>
@@ -337,8 +331,7 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           PROCESS
       ====================================================== */}
-
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/40 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -347,14 +340,17 @@ export default function VisaProcessingPage() {
             viewport={{ once: true }}
             className="mx-auto mb-12 max-w-3xl text-center"
           >
-            <span className="inline-block rounded-full bg-indigo-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-indigo-600">
-              How It Works
-            </span>
+            <div className="mb-3 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
+              <p className="bg-gradient-to-r from-emerald-700 to-amber-600 bg-clip-text font-semibold uppercase text-transparent">
+                How It Works
+              </p>
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
+            </div>
 
             <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
-              Simple & Easy
-              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                {" "}
+              Simple & Easy{" "}
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Visa Process
               </span>
             </h2>
@@ -374,14 +370,14 @@ export default function VisaProcessingPage() {
                     delay: index * 0.1,
                   }}
                   viewport={{ once: true }}
-                  className="relative rounded-2xl border border-slate-200 bg-white p-6 shadow-md"
+                  className="relative rounded-2xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-200/40 transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-100/60"
                 >
                   <div className="flex items-center justify-between">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-sky-100 to-indigo-100">
-                      <Icon className="h-6 w-6 text-sky-600" />
+                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-amber-50 border border-emerald-100">
+                      <Icon className="h-6 w-6 text-emerald-600" />
                     </div>
 
-                    <span className="text-3xl font-black text-slate-100">
+                    <span className="text-3xl font-black text-slate-200">
                       {step.number}
                     </span>
                   </div>
@@ -403,25 +399,26 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           REQUIRED DOCUMENTS
       ====================================================== */}
-
-      <section className="relative overflow-hidden bg-white py-16 md:py-24">
+      <section className="relative overflow-hidden bg-white py-16 md:py-24 border-b border-slate-100">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid items-center gap-12 lg:grid-cols-2">
             {/* Left */}
-
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.7 }}
               viewport={{ once: true }}
             >
-              <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
-                Documents
-              </span>
+              <div className="mb-3 flex items-center gap-3 font-mono text-xs tracking-[0.25em]">
+                <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
+                <p className="bg-gradient-to-r from-emerald-700 to-amber-600 bg-clip-text font-semibold uppercase text-transparent">
+                  Documents
+                </p>
+              </div>
 
               <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
-                Prepare Your
-                <span className="block bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
+                Prepare Your{" "}
+                <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                   Required Documents
                 </span>
               </h2>
@@ -434,7 +431,7 @@ export default function VisaProcessingPage() {
 
               <Link
                 href="/contact"
-                className="mt-6 inline-flex items-center gap-2 font-semibold text-sky-600 transition-colors hover:text-indigo-600"
+                className="mt-6 inline-flex items-center gap-2 font-semibold text-emerald-600 transition-colors hover:text-amber-600"
               >
                 Ask About Documents
                 <FaArrowRight />
@@ -442,7 +439,6 @@ export default function VisaProcessingPage() {
             </motion.div>
 
             {/* Right */}
-
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -460,9 +456,9 @@ export default function VisaProcessingPage() {
                     delay: index * 0.05,
                   }}
                   viewport={{ once: true }}
-                  className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 transition-all hover:border-sky-300 hover:bg-sky-50"
+                  className="flex items-center gap-3 rounded-xl border border-slate-200/80 bg-slate-50/60 p-4 transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50/40 shadow-sm"
                 >
-                  <FaCheckCircle className="h-5 w-5 flex-shrink-0 text-emerald-500" />
+                  <FaCheckCircle className="h-5 w-5 flex-shrink-0 text-amber-500" />
 
                   <span className="text-sm font-medium text-slate-700">
                     {document}
@@ -477,8 +473,7 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           WHY CHOOSE US
       ====================================================== */}
-
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -487,14 +482,17 @@ export default function VisaProcessingPage() {
             viewport={{ once: true }}
             className="mx-auto mb-12 max-w-3xl text-center"
           >
-            <span className="inline-block rounded-full bg-sky-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.2em] text-sky-600">
-              Why Choose Us
-            </span>
+            <div className="mb-3 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
+              <p className="bg-gradient-to-r from-emerald-700 to-amber-600 bg-clip-text font-semibold uppercase text-transparent">
+                Why Choose Us
+              </p>
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
+            </div>
 
             <h2 className="mt-4 text-3xl font-extrabold text-slate-900 sm:text-4xl">
-              Visa Processing With
-              <span className="bg-gradient-to-r from-amber-500 to-orange-500 bg-clip-text text-transparent">
-                {" "}
+              Visa Processing With{" "}
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Confidence
               </span>
             </h2>
@@ -515,10 +513,10 @@ export default function VisaProcessingPage() {
                   }}
                   viewport={{ once: true }}
                   whileHover={{ y: -6 }}
-                  className="rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-lg shadow-slate-200/30"
+                  className="rounded-2xl border border-slate-200/80 bg-white p-6 text-center shadow-lg shadow-slate-200/30 transition-all duration-300 hover:border-emerald-300 hover:shadow-xl hover:shadow-emerald-100/50"
                 >
-                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-br from-sky-100 to-indigo-100">
-                    <Icon className="h-7 w-7 text-sky-600" />
+                  <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-emerald-50 to-amber-50 border border-emerald-100">
+                    <Icon className="h-7 w-7 text-emerald-600" />
                   </div>
 
                   <h3 className="mt-5 text-lg font-bold text-slate-900">
@@ -538,12 +536,10 @@ export default function VisaProcessingPage() {
       {/* =====================================================
           CTA
       ====================================================== */}
-
-      <section className="relative overflow-hidden bg-gradient-to-r from-indigo-950 via-blue-900 to-cyan-900 py-16 md:py-20">
+      <section className="relative overflow-hidden bg-gradient-to-r from-slate-900 via-emerald-950 to-slate-900 py-16 md:py-20 text-white">
         <div className="pointer-events-none absolute inset-0">
-          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-sky-400/10 blur-3xl" />
-
-          <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-amber-400/10 blur-3xl" />
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
+          <div className="absolute -bottom-20 -right-20 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
         </div>
 
         <div className="container relative z-10 mx-auto px-4 text-center sm:px-6 lg:px-8">
@@ -553,23 +549,23 @@ export default function VisaProcessingPage() {
             transition={{ duration: 0.7 }}
             viewport={{ once: true }}
           >
-            <FaPlane className="mx-auto h-10 w-10 text-amber-400" />
+            <FaPlane className="mx-auto h-10 w-10 text-amber-500" />
 
             <h2 className="mt-5 text-3xl font-extrabold text-white sm:text-4xl md:text-5xl">
-              Ready to Start Your
-              <span className="block bg-gradient-to-r from-amber-300 to-orange-400 bg-clip-text text-transparent">
+              Ready to Start Your{" "}
+              <span className="block bg-gradient-to-r from-amber-400 to-emerald-400 bg-clip-text text-transparent">
                 Visa Journey?
               </span>
             </h2>
 
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-sky-100/70 md:text-lg">
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-slate-300 md:text-lg">
               Contact our team today and get professional guidance for your
               visa application.
             </p>
 
             <Link
               href="/contact"
-              className="group mt-7 inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-8 py-3.5 font-bold text-slate-950 shadow-lg shadow-amber-500/30 transition-all duration-300 hover:from-amber-400 hover:to-orange-400 hover:shadow-xl"
+              className="group mt-7 inline-flex items-center gap-3 rounded-xl bg-gradient-to-r from-emerald-600 to-amber-600 px-8 py-3.5 font-bold text-white shadow-lg shadow-emerald-900/40 transition-all duration-300 hover:from-emerald-700 hover:to-amber-700 hover:shadow-xl"
             >
               Contact Us Today
               <FaArrowRight className="transition-transform duration-300 group-hover:translate-x-1" />

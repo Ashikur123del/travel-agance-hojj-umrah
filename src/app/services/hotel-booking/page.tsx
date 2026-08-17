@@ -76,7 +76,7 @@ const categories: HotelCategory[] = [
     icon: FaBuilding,
     label: "Standard",
     desc: "Great value hotels with all essential amenities for families and couples.",
-    badgeBg: "bg-sky-50 border-sky-200 text-sky-700",
+    badgeBg: "bg-emerald-50 border-emerald-200 text-emerald-700",
     badgeText: "Most Popular",
   },
   {
@@ -90,7 +90,7 @@ const categories: HotelCategory[] = [
     icon: FaStar,
     label: "Luxury",
     desc: "5-star resorts and boutique hotels with world-class facilities and services.",
-    badgeBg: "bg-purple-50 border-purple-200 text-purple-700",
+    badgeBg: "bg-amber-50 border-amber-200 text-amber-700",
     badgeText: "5-Star Experience",
   },
 ];
@@ -131,10 +131,13 @@ export default function HotelBookingPage() {
       {/* =====================================================
           OVERVIEW SECTION
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        {/* Full Background Decorations */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-sky-300/20 blur-3xl" />
-          <div className="absolute -right-40 top-1/4 h-[450px] w-[450px] rounded-full bg-indigo-300/20 blur-3xl" />
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+          <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-emerald-100/40 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(245,158,11,0.08),transparent_30%)]" />
         </div>
 
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
@@ -145,17 +148,18 @@ export default function HotelBookingPage() {
             viewport={{ once: true }}
             className="mx-auto max-w-4xl text-center"
           >
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-400" />
+            {/* Label */}
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
               <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
                 Hospitality
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
             </div>
 
             <h2 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
               Your Stay,{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Perfectly Planned
               </span>
             </h2>
@@ -167,16 +171,14 @@ export default function HotelBookingPage() {
             </p>
 
             <div className="mt-8 flex flex-wrap justify-center gap-3">
-              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
-                <FaCheckCircle className="text-emerald-500" /> 100+ Hotels
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm">
+                <FaCheckCircle className="text-emerald-600" /> 100+ Hotels
               </div>
-
-              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm">
                 <FaClock className="text-amber-500" /> Instant Booking
               </div>
-
-              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">
-                <FaGlobe className="text-sky-500" /> 30+ Countries
+              <div className="flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm backdrop-blur-sm">
+                <FaGlobe className="text-emerald-600" /> 30+ Countries
               </div>
             </div>
           </motion.div>
@@ -186,20 +188,25 @@ export default function HotelBookingPage() {
       {/* =====================================================
           WHY CHOOSE US
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-400" />
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
               <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
                 Key Benefits
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
             </div>
 
             <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
               Why Choose Our{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Hotel Service
               </span>
             </h2>
@@ -215,15 +222,15 @@ export default function HotelBookingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -5 }}
-                  className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-amber-300 hover:shadow-xl hover:shadow-slate-200/70"
+                  whileHover={{ y: -8 }}
+                  className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 border border-amber-100 transition-transform duration-300 group-hover:scale-110">
+                    <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 transition-transform duration-300 group-hover:scale-110">
                       <Icon className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                      <h3 className="text-lg font-bold text-slate-800 transition-colors duration-300 group-hover:text-emerald-700">
                         {item.title}
                       </h3>
                       <p className="mt-1 text-sm leading-relaxed text-slate-500">
@@ -231,6 +238,8 @@ export default function HotelBookingPage() {
                       </p>
                     </div>
                   </div>
+                  {/* Hover Gradient Overlay */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-amber-500/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </motion.div>
               );
             })}
@@ -241,20 +250,25 @@ export default function HotelBookingPage() {
       {/* =====================================================
           HOTEL CATEGORIES
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-400" />
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
               <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
                 Accommodation Types
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
             </div>
 
             <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
               Hotel{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Categories
               </span>
             </h2>
@@ -270,28 +284,35 @@ export default function HotelBookingPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.08 }}
                   viewport={{ once: true }}
-                  whileHover={{ y: -6 }}
-                  className="flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-all duration-300 hover:border-amber-300 hover:shadow-xl hover:shadow-slate-200/60"
+                  whileHover={{ y: -8 }}
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-6 shadow-lg shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60"
                 >
                   <div>
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-amber-50 text-amber-500 border border-amber-100">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 transition-transform duration-300 group-hover:scale-110">
                         <Icon className="h-6 w-6" />
                       </div>
                       <span className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider ${cat.badgeBg}`}>
                         {cat.badgeText}
                       </span>
                     </div>
-                    <h4 className="text-xl font-bold text-slate-900">{cat.label}</h4>
-                    <p className="mt-2 text-xs leading-relaxed text-slate-500">{cat.desc}</p>
+                    <h4 className="text-xl font-bold text-slate-800 transition-colors duration-300 group-hover:text-emerald-700">
+                      {cat.label}
+                    </h4>
+                    <p className="mt-2 text-xs leading-relaxed text-slate-500">
+                      {cat.desc}
+                    </p>
                   </div>
 
                   <Link
                     href="/contact"
-                    className="mt-6 block text-center rounded-xl bg-amber-500 py-2.5 text-xs font-bold text-white transition-all hover:bg-amber-600 hover:shadow-md"
+                    className="mt-6 block w-full rounded-xl bg-gradient-to-r from-emerald-600 to-amber-600 py-2.5 text-center text-xs font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:from-emerald-700 hover:to-amber-700 hover:shadow-xl hover:shadow-emerald-600/30"
                   >
                     Book Now
                   </Link>
+
+                  {/* Hover Gradient Overlay */}
+                  <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-amber-500/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 </motion.div>
               );
             })}
@@ -302,20 +323,25 @@ export default function HotelBookingPage() {
       {/* =====================================================
           HOW TO BOOK
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-400" />
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
               <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
                 Simple Steps
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
             </div>
 
             <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
               How to{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Book
               </span>
             </h2>
@@ -329,14 +355,17 @@ export default function HotelBookingPage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.08 }}
                 viewport={{ once: true }}
-                className="group flex flex-col items-start gap-3 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-300 hover:shadow-md"
+                whileHover={{ y: -5 }}
+                className="group relative flex flex-col items-start gap-3 overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-5 shadow-lg shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60"
               >
-                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-100 font-extrabold text-amber-600 text-sm">
+                <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r from-emerald-600 to-amber-600 font-extrabold text-white text-sm shadow-md shadow-emerald-600/20">
                   {index + 1}
                 </div>
                 <p className="text-xs font-semibold leading-relaxed text-slate-700">
                   {step}
                 </p>
+                {/* Hover Gradient */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-amber-500/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
               </motion.div>
             ))}
           </div>
@@ -346,20 +375,25 @@ export default function HotelBookingPage() {
       {/* =====================================================
           POPULAR DESTINATIONS
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-400" />
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
               <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
                 Top Picks
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
             </div>
 
             <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
               Popular{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Destinations
               </span>
             </h2>
@@ -374,9 +408,12 @@ export default function HotelBookingPage() {
                 transition={{ delay: idx * 0.02 }}
                 viewport={{ once: true }}
                 whileHover={{ scale: 1.05 }}
-                className="rounded-full border border-slate-200 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all hover:border-amber-400 hover:text-amber-600 hover:shadow-md"
+                className="rounded-full border border-slate-200/80 bg-white px-5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition-all duration-300 hover:border-emerald-300 hover:text-emerald-700 hover:shadow-md hover:shadow-emerald-100/50"
               >
-                {dest.name} <span className="text-xs font-normal text-slate-400">({dest.country})</span>
+                {dest.name}{" "}
+                <span className="text-xs font-normal text-slate-400">
+                  ({dest.country})
+                </span>
               </motion.span>
             ))}
           </div>
@@ -390,35 +427,33 @@ export default function HotelBookingPage() {
       {/* =====================================================
           STATS SECTION
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all hover:border-amber-300 hover:shadow-xl"
-            >
-              <div className="text-4xl font-extrabold text-amber-500 mb-2">100+</div>
-              <h4 className="text-lg font-bold text-slate-900">Hotels</h4>
-              <p className="text-sm text-slate-500 mt-1">In our network</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all hover:border-amber-300 hover:shadow-xl"
-            >
-              <div className="text-4xl font-extrabold text-amber-500 mb-2">30+</div>
-              <h4 className="text-lg font-bold text-slate-900">Countries</h4>
-              <p className="text-sm text-slate-500 mt-1">Worldwide coverage</p>
-            </motion.div>
-
-            <motion.div
-              whileHover={{ y: -5 }}
-              className="rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm transition-all hover:border-amber-300 hover:shadow-xl"
-            >
-              <div className="text-4xl font-extrabold text-amber-500 mb-2">99%</div>
-              <h4 className="text-lg font-bold text-slate-900">Satisfaction</h4>
-              <p className="text-sm text-slate-500 mt-1">Happy guests</p>
-            </motion.div>
+            {[
+              { value: "100+", title: "Hotels", desc: "In our network" },
+              { value: "30+", title: "Countries", desc: "Worldwide coverage" },
+              { value: "99%", title: "Satisfaction", desc: "Happy guests" },
+            ].map((stat, i) => (
+              <motion.div
+                key={i}
+                whileHover={{ y: -8 }}
+                className="group relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white p-8 text-center shadow-lg shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60"
+              >
+                <div className="text-4xl font-extrabold bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent mb-2">
+                  {stat.value}
+                </div>
+                <h4 className="text-lg font-bold text-slate-800">{stat.title}</h4>
+                <p className="text-sm text-slate-500 mt-1">{stat.desc}</p>
+                {/* Hover Gradient */}
+                <div className="pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-amber-500/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+              </motion.div>
+            ))}
           </div>
         </div>
       </section>
@@ -426,20 +461,25 @@ export default function HotelBookingPage() {
       {/* =====================================================
           COMMON AMENITIES
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24 border-b border-slate-100">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24 border-b border-slate-100">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <div className="mb-4 flex items-center justify-center gap-3">
-              <span className="h-px w-10 bg-gradient-to-r from-transparent to-amber-400" />
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
               <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
                 Included Features
               </span>
-              <span className="h-px w-10 bg-gradient-to-l from-transparent to-amber-400" />
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
             </div>
 
             <h2 className="text-3xl font-extrabold text-slate-900 sm:text-4xl">
               Common Hotel{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Amenities
               </span>
             </h2>
@@ -462,9 +502,10 @@ export default function HotelBookingPage() {
                   whileInView={{ opacity: 1, scale: 1 }}
                   transition={{ delay: idx * 0.05 }}
                   viewport={{ once: true }}
-                  className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-5 py-3 shadow-sm transition-all hover:border-amber-300 hover:shadow-md"
+                  whileHover={{ scale: 1.05 }}
+                  className="flex items-center gap-2 rounded-xl border border-slate-200/80 bg-white px-5 py-3 shadow-sm transition-all duration-300 hover:border-emerald-300 hover:shadow-md hover:shadow-emerald-100/50"
                 >
-                  <Icon className="h-4 w-4 text-amber-500" />
+                  <Icon className="h-4 w-4 text-emerald-600" />
                   <span className="text-xs font-bold text-slate-700">{item.label}</span>
                 </motion.div>
               );
@@ -476,22 +517,34 @@ export default function HotelBookingPage() {
       {/* =====================================================
           CTA SECTION
       ====================================================== */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24">
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
+          <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
+          <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-emerald-100/40 blur-3xl" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(245,158,11,0.08),transparent_30%)]" />
+        </div>
+
         <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 25 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
-            className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-lg md:p-12"
+            className="mx-auto max-w-4xl overflow-hidden rounded-3xl border border-slate-200/80 bg-white p-8 text-center shadow-lg shadow-slate-200/50 md:p-12"
           >
-            <span className="inline-block rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
-              Get Started
-            </span>
+            {/* Label */}
+            <div className="mb-4 flex items-center justify-center gap-3 font-mono text-xs tracking-[0.25em]">
+              <span className="h-px w-8 bg-gradient-to-r from-emerald-600 to-amber-500" />
+              <span className="rounded-full bg-amber-100 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-amber-600">
+                Get Started
+              </span>
+              <span className="h-px w-8 bg-gradient-to-r from-amber-500 to-emerald-600" />
+            </div>
 
             <h2 className="mt-5 text-3xl font-extrabold text-slate-900 sm:text-4xl">
               Ready to Find Your{" "}
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
                 Perfect Stay?
               </span>
             </h2>
@@ -501,26 +554,31 @@ export default function HotelBookingPage() {
             </p>
 
             <div className="mt-8 flex flex-col sm:flex-row justify-center gap-3">
+              {/* Primary Button */}
               <Link
                 href="/contact"
-                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 px-7 py-3.5 font-bold text-white shadow-lg shadow-amber-500/20 transition-all hover:from-amber-600 hover:to-orange-600"
+                className="inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-amber-600 px-7 py-3.5 font-bold text-white shadow-lg shadow-emerald-600/20 transition-all duration-300 hover:from-emerald-700 hover:to-amber-700 hover:shadow-xl hover:shadow-emerald-600/30"
               >
-                Book Now <FaArrowRight className="h-4 w-4" />
+                Book Now
+                <FaArrowRight className="h-4 w-4" />
               </Link>
+
+              {/* Secondary Button */}
               <Link
                 href="/services"
-                className="inline-flex items-center justify-center rounded-xl border border-slate-300 bg-white px-7 py-3.5 font-semibold text-slate-700 transition-all hover:bg-slate-50 hover:text-amber-600"
+                className="inline-flex items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-white/80 px-7 py-3.5 font-semibold text-emerald-800 shadow-sm backdrop-blur-sm transition-all duration-300 hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-900 hover:shadow-md"
               >
-                View All Services →
+                View All Services
+                <FaArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
 
             <div className="mt-8 flex flex-wrap justify-center gap-6 text-xs sm:text-sm font-medium text-slate-500 border-t border-slate-100 pt-6">
               <span className="flex items-center gap-2">
-                <FaPhone className="text-amber-500" /> +880 1884-694337
+                <FaPhone className="text-emerald-600" /> +880 1714 544 877
               </span>
               <span className="flex items-center gap-2">
-                <FaEnvelope className="text-amber-500" /> akinaitravelsbd@gmail.com
+                <FaEnvelope className="text-emerald-600" /> www.modinahut.com
               </span>
             </div>
           </motion.div>

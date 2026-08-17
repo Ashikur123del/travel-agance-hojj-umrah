@@ -14,6 +14,7 @@ import {
   FaCcMastercard,
   FaCcPaypal,
   FaCcAmex,
+  FaGlobe,
 } from "react-icons/fa";
 
 import {
@@ -69,39 +70,39 @@ const Footer = () => {
 
   const services = [
     {
-      label: "Ticket",
-      href: "/services/ticket",
-    },
-    {
-      label: "Airlines Details",
-      href: "/services/ticket/airlines-details",
+      label: "Air Ticketing",
+      href: "/services",
     },
     {
       label: "Visa Processing",
-      href: "/services/visa-processing",
+      href: "/services",
     },
     {
-      label: "Hotel Booking",
-      href: "/services/hotel-booking",
+      label: "Hotel Reservation",
+      href: "/services",
+    },
+    {
+      label: "Holiday Tour Packages",
+      href: "/services",
     },
   ];
 
   const packages = [
     {
-      label: "Tour Package",
-      href: "/services/tour-package",
+      label: "Umrah Packages",
+      href: "/services",
     },
     {
-      label: "Hajj and Umrah",
-      href: "/services/hajj-umrah-package",
+      label: "Hajj Packages 2027",
+      href: "/services",
     },
     {
-      label: "Medical Service",
-      href: "/services/medical-service",
+      label: "VIP Pilgrimage",
+      href: "/services",
     },
     {
-      label: "Work Permit",
-      href: "/services/visa-processing/work-permit",
+      label: "Pre-registration",
+      href: "/contact",
     },
   ];
 
@@ -113,17 +114,9 @@ const Footer = () => {
       ====================================================== */}
 
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
-        {/* Left Glow */}
         <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-cyan-400/10 blur-3xl" />
-
-        {/* Right Glow */}
         <div className="absolute -right-40 top-20 h-[400px] w-[400px] rounded-full bg-indigo-400/10 blur-3xl" />
-
-        {/* Bottom Glow */}
         <div className="absolute bottom-[-200px] left-1/3 h-[450px] w-[450px] rounded-full bg-blue-400/10 blur-3xl" />
-
-        {/* Radial Gradient */}
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(6,182,212,0.10),transparent_30%),radial-gradient(circle_at_80%_70%,rgba(99,102,241,0.10),transparent_30%)]" />
       </div>
 
@@ -132,44 +125,33 @@ const Footer = () => {
       ====================================================== */}
 
       <div className="container relative mx-auto px-4 py-16 sm:px-6 lg:px-8">
-
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-12">
 
-          {/* =================================================
-              BRAND COLUMN
-          ================================================== */}
-
+          {/* BRAND COLUMN */}
           <div className="space-y-5">
-
             <Link
               href="/"
               className="inline-block text-2xl font-bold"
             >
               <span className="bg-gradient-to-r from-white via-indigo-100 to-cyan-300 bg-clip-text text-transparent">
-                Travel
+                Madina{" "}
               </span>
-
               <span className="text-amber-400">
-                Agency
+                Hajj & Umrah
               </span>
             </Link>
 
             <p className="max-w-xs text-sm leading-relaxed text-indigo-100/60">
-              Crafting unforgettable journeys with professional
-              service, trusted support, and carefully planned travel
-              experiences.
+              Paving your sacred pilgrimage with trust, excellence, and dedicated Hajj & Umrah travel support.
             </p>
 
             {/* Social */}
-
             <div className="flex items-center gap-3">
-
               <span className="text-xs text-indigo-100/40">
                 Follow us
               </span>
 
               <div className="flex gap-2">
-
                 {socialLinks.map((social) => {
                   const Icon = social.icon;
 
@@ -191,97 +173,69 @@ const Footer = () => {
                     </motion.a>
                   );
                 })}
-
               </div>
             </div>
           </div>
 
-          {/* =================================================
-              SERVICES
-          ================================================== */}
-
+          {/* SERVICES */}
           <div>
-
             <h4 className="mb-5 text-lg font-bold text-white">
-              Services
+              Our Services
             </h4>
 
             <ul className="space-y-3">
-
               {services.map((item) => (
                 <li key={item.label}>
-
                   <Link
                     href={item.href}
                     className="group flex items-center gap-2 text-sm text-indigo-100/60 transition-colors duration-300 hover:text-amber-400"
                   >
                     <span className="h-1 w-1 rounded-full bg-cyan-400 opacity-0 transition-all duration-300 group-hover:opacity-100" />
-
                     {item.label}
                   </Link>
-
                 </li>
               ))}
-
             </ul>
           </div>
 
-          {/* =================================================
-              PACKAGES
-          ================================================== */}
-
+          {/* PACKAGES */}
           <div>
-
             <h4 className="mb-5 text-lg font-bold text-white">
               Packages
             </h4>
 
             <ul className="space-y-3">
-
               {packages.map((item) => (
                 <li key={item.label}>
-
                   <Link
                     href={item.href}
                     className="group flex items-center gap-2 text-sm text-indigo-100/60 transition-colors duration-300 hover:text-amber-400"
                   >
                     <span className="h-1 w-1 rounded-full bg-cyan-400 opacity-0 transition-all duration-300 group-hover:opacity-100" />
-
                     {item.label}
                   </Link>
-
                 </li>
               ))}
-
             </ul>
           </div>
 
-          {/* =================================================
-              NEWSLETTER + CONTACT
-          ================================================== */}
-
+          {/* NEWSLETTER + CONTACT */}
           <div className="space-y-5">
-
             <div>
-
               <h4 className="text-lg font-bold text-white">
                 Get Updates
               </h4>
 
               <p className="mt-2 text-sm leading-relaxed text-indigo-100/60">
-                Subscribe to receive travel updates, special
-                offers, and exclusive tour packages.
+                Subscribe to receive updates on upcoming Hajj & Umrah batches and offers.
               </p>
-
             </div>
 
             {/* Newsletter */}
-
             <form
               onSubmit={handleSubscribe}
               className="flex flex-col gap-2 sm:flex-row"
             >
-
               <input
                 type="email"
                 value={email}
@@ -303,11 +257,9 @@ const Footer = () => {
               >
                 Subscribe
               </motion.button>
-
             </form>
 
-            {/* Success */}
-
+            {/* Success Message */}
             {subscribed && (
               <motion.p
                 initial={{
@@ -324,46 +276,43 @@ const Footer = () => {
               </motion.p>
             )}
 
-            {/* Contact */}
-
+            {/* Contact Details from Image */}
             <div className="space-y-3 border-t border-white/10 pt-4">
-
-              <div className="flex items-center gap-3 text-sm text-indigo-100/50">
-
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
+              <div className="flex items-start gap-3 text-sm text-indigo-100/60">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5">
                   <MdLocationOn className="h-5 w-5 text-amber-400" />
                 </span>
-
                 <span>
-                  123, Motijheel C/A, Dhaka-1000
+                  Chowrangi Super Market (3rd Floor), Savar, Dhaka
                 </span>
-
               </div>
 
-              <div className="flex items-center gap-3 text-sm text-indigo-100/50">
-
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
+              <div className="flex items-center gap-3 text-sm text-indigo-100/60">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5">
                   <MdPhone className="h-5 w-5 text-amber-400" />
                 </span>
-
                 <span>
-                  +880 1884-694337
+                  +880 1714 544 877
                 </span>
-
               </div>
 
-              <div className="flex items-center gap-3 text-sm text-indigo-100/50">
-
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-white/5">
+              <div className="flex items-center gap-3 text-sm text-indigo-100/60">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5">
                   <MdEmail className="h-5 w-5 text-amber-400" />
                 </span>
-
                 <span className="break-all">
-                  akinaitravelsbd@gmail.com
+                  madinahut26@gmail.com
                 </span>
-
               </div>
 
+              <div className="flex items-center gap-3 text-sm text-indigo-100/60">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/5">
+                  <FaGlobe className="h-4 w-4 text-amber-400" />
+                </span>
+                <span className="break-all">
+                  www.madinahut.com
+                </span>
+              </div>
             </div>
 
           </div>
@@ -375,21 +324,16 @@ const Footer = () => {
       ====================================================== */}
 
       <div className="relative border-t border-white/10 bg-indigo-950/30 backdrop-blur-md">
-
         <div className="container mx-auto px-4 py-5 sm:px-6 lg:px-8">
-
           <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
 
             {/* Copyright */}
-
             <p className="text-center text-xs text-indigo-100/40 md:text-left">
-              © 2026 Travel Agency. All rights reserved.
+              © 2026 Madina Hajj & Umrah Travels. All rights reserved.
             </p>
 
             {/* Legal Links */}
-
             <div className="flex flex-wrap justify-center gap-5">
-
               <Link
                 href="/privacy-policy"
                 className="text-xs text-indigo-100/40 transition-colors hover:text-amber-400"
@@ -410,25 +354,17 @@ const Footer = () => {
               >
                 Contact Us
               </Link>
-
             </div>
 
             {/* Payment Methods */}
-
             <div className="flex items-center gap-2 text-indigo-100/30">
-
               <FaCcVisa className="h-6 w-6" />
-
               <FaCcMastercard className="h-6 w-6" />
-
               <FaCcPaypal className="h-6 w-6" />
-
               <FaCcAmex className="h-6 w-6" />
-
               <span className="ml-1 text-xs">
                 Secure
               </span>
-
             </div>
 
           </div>

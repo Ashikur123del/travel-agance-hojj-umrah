@@ -9,54 +9,50 @@ import {
   FaGlobe,
   FaHeart,
   FaRegStar,
+  FaKaaba,
 } from "react-icons/fa";
-import { FaEarthAfrica } from "react-icons/fa6";
-import { PiShoppingBagOpenFill } from "react-icons/pi";
+import { FaUsers } from "react-icons/fa6";
 
 const WhoWeAre = () => {
   const highlights = [
     {
+      icon: FaKaaba,
+      text: "Specialized Hajj & Umrah packages under experienced Moallem guidance",
+    },
+    {
       icon: FaHandshake,
-      text: "Trusted visa processing services with 95% success rate",
+      text: "Trusted Saudi visa processing & approval with 98% success rate",
     },
     {
       icon: FaGlobe,
-      text: "Affordable air ticketing to 30+ countries worldwide",
+      text: "Direct & connecting air ticketing to Saudi Arabia & 30+ countries",
     },
     {
       icon: FaHeart,
-      text: "Customized tour packages for families, couples, and groups",
-    },
-    {
-      icon: FaCheckCircle,
-      text: "Hajj & Umrah specialists with 5+ years of experience",
+      text: "Dedicated ground support & luxury transfers in Makkah & Madina",
     },
   ];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-sky-50 via-white to-indigo-50 py-16 md:py-24">
-
+    <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 py-16 md:py-24">
       {/* Background Decoration */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-
         {/* Top Left Glow */}
-        <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-sky-300/30 blur-3xl" />
+        <div className="absolute -left-40 -top-40 h-[450px] w-[450px] rounded-full bg-emerald-200/30 blur-3xl" />
 
         {/* Right Glow */}
-        <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-indigo-300/25 blur-3xl" />
+        <div className="absolute -right-32 top-1/4 h-[400px] w-[400px] rounded-full bg-amber-200/25 blur-3xl" />
 
         {/* Bottom Glow */}
-        <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-blue-200/30 blur-3xl" />
+        <div className="absolute bottom-[-180px] left-1/3 h-[450px] w-[450px] rounded-full bg-emerald-100/40 blur-3xl" />
 
         {/* Soft Radial Background */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(56,189,248,0.12),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(99,102,241,0.10),transparent_30%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,rgba(16,185,129,0.08),transparent_30%),radial-gradient(circle_at_85%_70%,rgba(245,158,11,0.08),transparent_30%)]" />
       </div>
 
       {/* Main Content */}
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
-
         <div className="flex flex-col items-center gap-12 lg:flex-row lg:gap-16">
-
           {/* =========================
               IMAGE
           ========================== */}
@@ -68,30 +64,27 @@ const WhoWeAre = () => {
             className="flex-1 w-full max-w-lg lg:max-w-none"
           >
             <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-300/40">
-
               <div className="relative w-full h-[350px] sm:h-[400px] md:h-[450px]">
-
                 <Image
-                  src="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=800&q=80"
-                  alt="About Organized Adventure - Travel Team"
+                  src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=800&q=80"
+                  alt="Madina Hajj & Umrah Travels Team and Pilgrims"
                   fill
                   sizes="(max-width: 1024px) 100vw, 50vw"
                   className="object-cover transition-transform duration-700 hover:scale-105"
                 />
 
                 {/* Image Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-transparent to-transparent" />
 
-                {/* Blue Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-sky-500/10 via-transparent to-indigo-500/10" />
-
+                {/* Emerald Overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-600/10 via-transparent to-amber-600/10" />
               </div>
 
-              {/* Happy Clients */}
-              <div className="absolute bottom-4 left-4 rounded-xl border border-white/20 bg-white/20 px-4 py-2 shadow-lg backdrop-blur-md">
+              {/* Happy Pilgrims */}
+              <div className="absolute bottom-4 left-4 rounded-xl border border-white/20 bg-emerald-950/40 px-4 py-2 shadow-lg backdrop-blur-md">
                 <span className="flex items-center gap-2 text-sm font-semibold text-white">
                   <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-400" />
-                  500+ Happy Clients
+                  1,000+ Satisfied Pilgrims
                 </span>
               </div>
 
@@ -115,45 +108,32 @@ const WhoWeAre = () => {
             viewport={{ once: true }}
             className="flex-1"
           >
-
             {/* Label */}
-            <span className="inline-block rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold uppercase tracking-widest text-sky-600">
+            <span className="inline-block rounded-full bg-emerald-100 px-3.5 py-1 text-xs font-semibold uppercase tracking-widest text-emerald-700">
               Who We Are
             </span>
 
             {/* Heading */}
-            <h2 className="mt-3 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl">
-              Crafting Journeys,
+            <h2 className="mt-3 text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
+              Serving Pilgrims With{" "}
               <br />
-
-              <span className="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 bg-clip-text text-transparent">
-                Building Trust
+              <span className="bg-gradient-to-r from-emerald-600 via-amber-600 to-emerald-700 bg-clip-text text-transparent">
+                Devotion & Trust
               </span>
             </h2>
 
             {/* Paragraph */}
             <p className="mt-4 text-base leading-relaxed text-slate-600 md:text-lg">
-              Our travel agency started its journey in{" "}
-              <strong className="text-slate-900">2018</strong> with a simple
-              mission: to provide trusted, safe, and professional travel-related
-              services for customers across Bangladesh and beyond. What began
-              as a small dream has now grown into a full-service travel agency,
-              helping thousands of travelers reach their dream destinations.
+              <strong className="text-slate-900">Madina Hajj & Umrah Travels</strong> started its journey in{" "}
+              <strong className="text-slate-900">2018</strong> with a sacred mission: to serve pilgrims with honesty, transparency, and utmost dedication across Bangladesh and beyond.
             </p>
 
             <p className="mt-3 text-base leading-relaxed text-slate-500 md:text-lg">
-              Our goal is to make{" "}
-              <strong className="text-slate-900">visa processing</strong>,{" "}
-              <strong className="text-slate-900">air ticketing</strong>,{" "}
-              <strong className="text-slate-900">tour planning</strong>,{" "}
-              <strong className="text-slate-900">hotel booking</strong>,{" "}
-              <strong className="text-slate-900">Hajj</strong>,{" "}
-              <strong className="text-slate-900">Umrah</strong>, and{" "}
-              <strong className="text-slate-900">
-                Saudi-related services
-              </strong>{" "}
-              easier for everyone. We believe that travel should be seamless,
-              stress-free, and unforgettable.
+              We specialize in{" "}
+              <strong className="text-slate-900">Hajj & Umrah packages</strong>,{" "}
+              <strong className="text-slate-900">Saudi Visa processing</strong>,{" "}
+              <strong className="text-slate-900">Air ticketing</strong>, and{" "}
+              <strong className="text-slate-900">Hotel booking near Haram</strong>. Our commitment is to provide a smooth and spiritually uplifting journey for every pilgrim.
             </p>
 
             {/* Highlights */}
@@ -171,9 +151,9 @@ const WhoWeAre = () => {
                       delay: index * 0.1,
                     }}
                     viewport={{ once: true }}
-                    className="group flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/75 p-3 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-sky-300 hover:bg-white hover:shadow-lg"
+                    className="group flex items-start gap-3 rounded-xl border border-slate-200/80 bg-white/80 p-3 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-emerald-300 hover:bg-white hover:shadow-lg"
                   >
-                    <Icon className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500 transition-transform duration-300 group-hover:scale-110" />
+                    <Icon className="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-600 transition-transform duration-300 group-hover:scale-110" />
 
                     <span className="text-sm text-slate-600 md:text-base">
                       {item.text}
@@ -192,31 +172,30 @@ const WhoWeAre = () => {
               className="mt-6 flex flex-wrap items-center gap-6 text-sm text-slate-500"
             >
               <p className="flex items-center gap-2">
-                <span className="text-2xl text-amber-500">
+                <span className="text-2xl text-amber-600">
                   <IoIosTrophy />
                 </span>
-                Award-winning service
+                Govt. Approved Agency
               </p>
 
               <span className="hidden h-6 w-px bg-slate-200 sm:block" />
 
               <p className="flex items-center gap-2">
-                <span className="text-2xl text-amber-500">
-                  <FaEarthAfrica />
+                <span className="text-2xl text-emerald-600">
+                  <FaGlobe />
                 </span>
-                Global network
+                Global Network
               </p>
 
               <span className="hidden h-6 w-px bg-slate-200 sm:block" />
 
               <p className="flex items-center gap-2">
-                <span className="text-2xl text-amber-500">
-                  <PiShoppingBagOpenFill />
+                <span className="text-2xl text-amber-600">
+                  <FaUsers />
                 </span>
-                50+ team members
+                Dedicated Support Team
               </p>
             </motion.div>
-
           </motion.div>
         </div>
       </div>
