@@ -4,6 +4,7 @@ import { FaArrowRight, FaCalendarAlt, FaClock, FaNewspaper, FaUser } from "react
 import { newsData } from "../data/news";
 import ServiceHero from "../services/ServiceHero";
 
+
 export default function NewsPage() {
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 text-slate-800">

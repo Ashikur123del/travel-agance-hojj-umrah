@@ -2,7 +2,7 @@
 
 import { notFound } from "next/navigation";
 import NewsDetailClient from "./NewsDetailClient";
-import { newsData } from "@/app/data/news";
+import { newsData } from "@/app/(main)/data/news";
 
 export async function generateStaticParams() {
   return newsData.map((item) => ({

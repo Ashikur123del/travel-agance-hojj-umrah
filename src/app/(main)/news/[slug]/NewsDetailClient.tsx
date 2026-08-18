@@ -3,7 +3,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { FaArrowLeft, FaCalendarAlt, FaClock, FaUser, FaShareAlt } from "react-icons/fa";
-import { NewsItem } from "@/app/data/news";
+import { NewsItem } from "@/app/(main)/data/news";
 
 
 export default function NewsDetailClient({ news }: { news: NewsItem }) {

@@ -25,7 +25,8 @@ import {
   FaChalkboardTeacher,
   FaShoppingCart,
 } from "react-icons/fa";
-import ServiceHero from "@/app/services/ServiceHero";
+import ServiceHero from "../../ServiceHero";
+
 
 const features = [
   {

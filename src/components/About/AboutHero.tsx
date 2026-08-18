@@ -8,10 +8,6 @@ import { TbPlaneTilt } from "react-icons/tb";
 const AboutHero = () => {
   return (
     <section className="relative w-full h-[60vh] min-h-[520px] md:h-[70vh] overflow-hidden flex items-center">
-      {/* =====================================================
-          BACKGROUND IMAGE
-      ====================================================== */}
-
       <div className="absolute inset-0 z-0">
         <Image
           src="https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1920&q=85"
@@ -22,19 +18,10 @@ const AboutHero = () => {
           className="object-cover object-center"
         />
 
-        {/* Main dark overlay */}
         <div className="absolute inset-0 bg-gradient-to-r from-slate-950/85 via-indigo-950/65 to-slate-950/45" />
-
-        {/* Extra bottom dark overlay */}
         <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-slate-950/70 to-transparent" />
-
-        {/* Soft overall overlay */}
         <div className="absolute inset-0 bg-black/10" />
       </div>
-
-      {/* =====================================================
-          DECORATIVE GLOW
-      ====================================================== */}
 
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
@@ -50,9 +37,6 @@ const AboutHero = () => {
         className="absolute bottom-0 left-0 z-0 h-72 w-72 rounded-full bg-orange-500/10 blur-3xl"
       />
 
-      {/* =====================================================
-          CONTENT
-      ====================================================== */}
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8 text-center">
         <motion.div
@@ -68,9 +52,6 @@ const AboutHero = () => {
           }}
           className="mx-auto max-w-5xl"
         >
-          {/* =================================================
-              BADGE
-          ================================================== */}
 
           <motion.div
             variants={{
@@ -92,10 +73,6 @@ const AboutHero = () => {
               About Us
             </span>
           </motion.div>
-
-          {/* =================================================
-              HEADING
-          ================================================== */}
 
           <motion.h1
             variants={{
@@ -137,10 +114,6 @@ const AboutHero = () => {
             </motion.span>
           </motion.h1>
 
-          {/* =================================================
-              DESCRIPTION
-          ================================================== */}
-
           <motion.p
             variants={{
               hidden: {
@@ -162,10 +135,6 @@ const AboutHero = () => {
             professional, reliable, and personalized service.
           </motion.p>
 
-          {/* =================================================
-              STATS
-          ================================================== */}
-
           <motion.div
             variants={{
               hidden: {
@@ -183,7 +152,6 @@ const AboutHero = () => {
             }}
             className="mt-8 flex flex-wrap justify-center gap-3 sm:gap-4"
           >
-            {/* Destination */}
 
             <motion.div
               whileHover={{
@@ -200,8 +168,6 @@ const AboutHero = () => {
               <span>30+ Destinations</span>
             </motion.div>
 
-            {/* Airlines */}
-
             <motion.div
               whileHover={{
                 y: -5,
@@ -216,8 +182,6 @@ const AboutHero = () => {
 
               <span>50+ Airline Partners</span>
             </motion.div>
-
-            {/* Satisfaction */}
 
             <motion.div
               whileHover={{
@@ -236,10 +200,6 @@ const AboutHero = () => {
           </motion.div>
         </motion.div>
       </div>
-
-      {/* =====================================================
-          BOTTOM FADE
-      ====================================================== */}
 
       <div className="absolute bottom-0 left-0 right-0 z-10 h-16 bg-gradient-to-t from-indigo-950/50 to-transparent" />
     </section>

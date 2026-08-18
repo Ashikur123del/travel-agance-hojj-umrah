@@ -127,13 +127,9 @@ const FeaturedTourPackages: React.FC = () => {
         <circle cx="950" cy="350" r="5" fill="#F59E0B" />
       </svg>
 
-      {/* =====================================================
-          MAIN CONTAINER
-      ====================================================== */}
+
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
+    
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
