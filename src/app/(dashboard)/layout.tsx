@@ -1,6 +1,7 @@
 import DashboardHeader from "@/components/Dashboard/DashboardHeader";
 import DashboardSidebar from "@/components/Dashboard/Sidebar";
 import type { Metadata } from "next";
+import { ToastContainer } from "react-toastify";
 
 
 
@@ -25,6 +26,7 @@ export default function DashboardLayout({
         
         {/* Desktop Header */}
         <DashboardHeader />
+        <ToastContainer />
 
         {/* Page Content */}
         <main className="min-h-screen pt-16 lg:pt-0">

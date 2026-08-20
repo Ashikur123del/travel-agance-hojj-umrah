@@ -36,9 +36,7 @@ export default function DashboardSidebar() {
 
   return (
     <>
-      {/* =========================
-          MOBILE HEADER
-      ========================== */}
+   
       <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-100/70 bg-white/90 px-4 shadow-sm backdrop-blur-md lg:hidden">
         <button
           type="button"
@@ -64,9 +62,6 @@ export default function DashboardSidebar() {
         </button>
       </header>
 
-      {/* =========================
-          MOBILE OVERLAY
-      ========================== */}
       {sidebarOpen && (
         <div
           onClick={closeSidebar}
@@ -74,9 +69,6 @@ export default function DashboardSidebar() {
         />
       )}
 
-      {/* =========================
-          SIDEBAR
-      ========================== */}
       <aside
         className={`
           fixed left-0 top-0 z-50 flex h-screen w-72 flex-col
@@ -93,10 +85,10 @@ export default function DashboardSidebar() {
       >
         {/* =========================
             LOGO
-        ========================== */}
+        ========================= */}
         <div className="flex h-20 items-center justify-between border-b border-white/10 px-6">
           <Link
-            href="/dashboard"
+            href="/"
             onClick={closeSidebar}
             className="text-2xl font-bold tracking-wide"
           >
@@ -114,7 +106,7 @@ export default function DashboardSidebar() {
 
         {/* =========================
             NAVIGATION
-        ========================== */}
+        ========================= */}
         <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">
           <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-200/70">
             Dashboard
@@ -131,34 +123,34 @@ export default function DashboardSidebar() {
               Dashboard
             </Link>
 
-            {/* Profile */}
+            {/* Profile (ঠিক করা হয়েছে: /dashboard/profile) */}
             <Link
-              href="/dashboard/profile"
+              href="/heroslider"
               onClick={closeSidebar}
               className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
             >
               <FaUser className="h-4 w-4 text-emerald-300" />
-              Profile
+              Hero Slider Add
             </Link>
 
             {/* Bookings */}
             <Link
-              href="/dashboard/bookings"
+              href="/addnews"
               onClick={closeSidebar}
               className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
             >
               <FaPlane className="h-4 w-4 text-cyan-300" />
-              My Bookings
+              Add a News
             </Link>
 
             {/* Settings */}
             <Link
-              href="/dashboard/settings"
+              href="/addgallery"
               onClick={closeSidebar}
               className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
             >
               <FaCog className="h-4 w-4 text-amber-300" />
-              Settings
+              Add Gallery
             </Link>
           </nav>
 
@@ -187,7 +179,7 @@ export default function DashboardSidebar() {
 
         {/* =========================
             FOOTER
-        ========================== */}
+        ========================= */}
         <div className="border-t border-white/10 p-4">
           <p className="text-center text-xs text-teal-200/60">
             © 2026 TravelAgence
