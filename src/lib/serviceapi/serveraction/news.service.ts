@@ -1,10 +1,17 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { NewsItem } from "@/types/news"; 
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/news`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/news`; 
 
-export async function createNewsAction(formData: FormData) {
+export type NewsServerActionResponse<T = any> = {
+  success: boolean;
+  message?: string;
+  data?: T;
+};
+
+export async function createNewsAction(formData: FormData): Promise<NewsServerActionResponse<NewsItem>> {
   try {
     const res = await fetch(API_URL, {
       method: "POST",
@@ -16,16 +23,15 @@ export async function createNewsAction(formData: FormData) {
       return { success: false, message: errorData?.error || "Failed to add news on server." };
     }
 
-    const data = await res.json();
+    const data: NewsItem = await res.json();
     revalidatePath("/news");
     return { success: true, data };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Server Action Error:", error);
     return { success: false, message: "Something went wrong!" };
   }
 }
-
-export async function getNewsByIdAction(id: string) {
+export async function getNewsByIdAction(id: string): Promise<NewsServerActionResponse<NewsItem>> {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       method: "GET",
@@ -36,16 +42,15 @@ export async function getNewsByIdAction(id: string) {
       return { success: false, message: "Failed to fetch news details." };
     }
 
-    const data = await res.json();
+    const data: NewsItem = await res.json();
     return { success: true, data };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Get News Details Error:", error);
     return { success: false, message: "Something went wrong!" };
   }
 }
 
-
-export async function updateNewsAction(id: string, formData: FormData) {
+export async function updateNewsAction(id: string, formData: FormData): Promise<NewsServerActionResponse<NewsItem>> {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       method: "PATCH", 
@@ -57,18 +62,18 @@ export async function updateNewsAction(id: string, formData: FormData) {
       return { success: false, message: errorData?.error || "Failed to update news." };
     }
 
-    const data = await res.json();
+    const data: NewsItem = await res.json();
     revalidatePath("/news");
     revalidatePath(`/news/${id}`);
 
     return { success: true, data };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Update News Error:", error);
     return { success: false, message: "Something went wrong!" };
   }
 }
 
-export async function deleteNewsAction(id: string | number) {
+export async function deleteNewsAction(id: string | number): Promise<NewsServerActionResponse> {
   try {
     const res = await fetch(`${API_URL}/${id}`, {
       method: "DELETE",
@@ -80,7 +85,7 @@ export async function deleteNewsAction(id: string | number) {
 
     revalidatePath("/news");
     return { success: true, message: "News deleted successfully." };
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("Delete News Error:", error);
     return { success: false, message: "Something went wrong!" };
   }

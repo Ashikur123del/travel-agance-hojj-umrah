@@ -2,18 +2,18 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { FaNewspaper, FaArrowLeft, FaUpload, FaSpinner } from "react-icons/fa";
+import { FaNewspaper, FaArrowLeft, FaUpload, FaSpinner, FaEye, FaEdit } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import Link from "next/link";
 import { createNewsAction } from "@/lib/serviceapi/serveraction/news.service";
-
 
 export default function AddNewsPage() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isPreviewMode, setIsPreviewMode] = useState(false); // লাইভ প্রিভিউ টগল
 
   const [formData, setFormData] = useState({
     title: "",
@@ -22,8 +22,8 @@ export default function AddNewsPage() {
     categoryColor: "from-amber-500 to-orange-500",
     excerpt: "",
     content: "",
-    date: "",
-    readTime: "",
+    date: new Date().toLocaleDateString("en-US", { day: "numeric", month: "long", year: "numeric" }),
+    readTime: "3 min read",
     author: "Travel Desk",
     featured: false,
   });
@@ -39,6 +39,16 @@ export default function AddNewsPage() {
     }
   };
 
+  // টাইটেল থেকে অটো স্লাগ জেনারেটর
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const title = e.target.value;
+    const slug = title
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "");
+    setFormData((prev) => ({ ...prev, title, slug }));
+  };
+
   // ইমেজ সিলেক্ট হ্যান্ডলার
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -48,7 +58,7 @@ export default function AddNewsPage() {
     }
   };
 
-  // ফর্ম সাবমিট হ্যান্ডলার (সার্ভার অ্যাকশন সহ)
+  // ফর্ম সাবমিট হ্যান্ডলার
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -72,12 +82,11 @@ export default function AddNewsPage() {
       data.append("author", formData.author);
       data.append("featured", String(formData.featured));
 
-      // সার্ভার অ্যাকশন কল
       const result = await createNewsAction(data);
 
       if (result.success) {
         toast.success("News added successfully!");
-        router.push("/news"); // সফলভাবে সেভ হওয়ার পর নিউজ পেজে রিডাইরেক্ট করবে
+        router.push("/news");
         router.refresh();
       } else {
         toast.error(result.message || "Failed to add news!");
@@ -91,51 +100,63 @@ export default function AddNewsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 p-4 sm:p-6 lg:p-10">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-slate-100 to-emerald-50/30 p-4 sm:p-6 lg:p-10">
       <div className="max-w-4xl mx-auto space-y-6">
         
         {/* Header Section */}
-        <div className="flex items-center justify-between bg-white/80 backdrop-blur-sm px-6 py-4 rounded-2xl border border-slate-200/70 shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/85 backdrop-blur-md px-6 py-4 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-              <FaNewspaper className="text-emerald-600" /> Add New Travel News
+              <FaNewspaper className="text-emerald-600" /> Create Travel Article
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              Publish new articles, visa updates, or offers for travelers.
+              Publish rich content, visa guidelines, or exclusive travel insights.
             </p>
           </div>
-          <Link
-            href="/news"
-            className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition"
-          >
-            <FaArrowLeft className="text-xs" />
-            Back to News
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/news-view-details"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium rounded-xl transition border border-emerald-200"
+            >
+              {isPreviewMode ? <FaEdit className="text-xs" /> : <FaEye className="text-xs" />}
+              {isPreviewMode ? "Edit Form" : "Live Preview"}
+            </Link>
+            <Link
+              href="/news"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-medium rounded-xl transition"
+            >
+              <FaArrowLeft className="text-xs" />
+              Back
+            </Link>
+          </div>
         </div>
 
-        {/* Form Section */}
+        {/* Form Section with onSubmit Handler */}
         <form onSubmit={handleSubmit} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 space-y-6">
           
           {/* Image Upload Area */}
           <div className="space-y-2">
             <label className="block text-sm font-semibold text-slate-700">
-              Featured Image <span className="text-rose-500">*</span>
+              Featured Cover Image <span className="text-rose-500">*</span>
             </label>
             <div className="flex flex-col sm:flex-row items-center gap-6">
-              <div className="relative h-40 w-full sm:w-72 bg-slate-100 rounded-xl overflow-hidden border-2 border-dashed border-slate-300 flex items-center justify-center">
+              <div className="relative h-44 w-full sm:w-80 bg-slate-50 rounded-2xl overflow-hidden border-2 border-dashed border-slate-300 flex items-center justify-center group hover:border-emerald-500 transition">
                 {imagePreview ? (
                   <Image src={imagePreview} alt="Preview" fill className="object-cover" />
                 ) : (
-                  <span className="text-xs text-slate-400">No image chosen</span>
+                  <div className="text-center p-4">
+                    <FaUpload className="mx-auto text-slate-300 text-2xl mb-2 group-hover:text-emerald-500 transition" />
+                    <span className="text-xs text-slate-400 font-medium">Click or drag image to upload</span>
+                  </div>
                 )}
               </div>
-              <div className="flex-1 w-full">
-                <label className="inline-flex items-center justify-center w-full sm:w-auto gap-2 px-5 py-3 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-semibold rounded-xl cursor-pointer transition border border-emerald-200">
-                  <FaUpload className="text-sm" />
-                  <span>Choose News Image</span>
+              <div className="flex-1 w-full space-y-2">
+                <label className="inline-flex items-center justify-center w-full sm:w-auto gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl cursor-pointer transition shadow-md shadow-emerald-600/20">
+                  <FaUpload className="text-xs" />
+                  <span>Choose Cover Image</span>
                   <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
                 </label>
-                <p className="text-xs text-slate-400 mt-2">Supports JPG, PNG, WEBP.</p>
+                <p className="text-xs text-slate-400">Supports JPG, PNG, WEBP.</p>
               </div>
             </div>
           </div>
@@ -144,29 +165,29 @@ export default function AddNewsPage() {
             
             {/* Title */}
             <div className="space-y-1.5 sm:col-span-2">
-              <label className="block text-sm font-semibold text-slate-700">News Title <span className="text-rose-500">*</span></label>
+              <label className="block text-sm font-semibold text-slate-700">Article Title <span className="text-rose-500">*</span></label>
               <input
                 type="text"
                 name="title"
                 value={formData.title}
-                onChange={handleChange}
-                placeholder="e.g., Saudi Tourist Visa Now Open"
+                onChange={handleTitleChange}
+                placeholder="e.g., Ultimate Guide to Exploring Switzerland"
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               />
             </div>
 
             {/* Slug */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-700">Slug (URL Name) <span className="text-rose-500">*</span></label>
+              <label className="block text-sm font-semibold text-slate-700">URL Slug <span className="text-rose-500">*</span></label>
               <input
                 type="text"
                 name="slug"
                 value={formData.slug}
                 onChange={handleChange}
-                placeholder="e.g., saudi-tourist-visa"
+                placeholder="e.g., ultimate-guide-switzerland"
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               />
             </div>
 
@@ -178,39 +199,40 @@ export default function AddNewsPage() {
                 name="category"
                 value={formData.category}
                 onChange={handleChange}
-                placeholder="e.g., Visa Update, Offer, Travel Guide"
+                placeholder="e.g., Visa Guide, Travel Tips"
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               />
             </div>
 
             {/* Category Color Gradient */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-700">Category Badge Gradient</label>
+              <label className="block text-sm font-semibold text-slate-700">Badge Theme Gradient</label>
               <select
                 name="categoryColor"
                 value={formData.categoryColor}
                 onChange={handleChange}
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-white"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               >
                 <option value="from-amber-500 to-orange-500">Amber to Orange</option>
                 <option value="from-emerald-500 to-teal-500">Emerald to Teal</option>
                 <option value="from-blue-500 to-cyan-500">Blue to Cyan</option>
                 <option value="from-purple-500 to-pink-500">Purple to Pink</option>
+                <option value="from-rose-500 to-red-600">Rose to Red</option>
               </select>
             </div>
 
             {/* Date */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-700">Date <span className="text-rose-500">*</span></label>
+              <label className="block text-sm font-semibold text-slate-700">Display Date <span className="text-rose-500">*</span></label>
               <input
                 type="text"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
-                placeholder="e.g., 15 June 2026"
+                placeholder="e.g., 22 June 2026"
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               />
             </div>
 
@@ -222,87 +244,92 @@ export default function AddNewsPage() {
                 name="readTime"
                 value={formData.readTime}
                 onChange={handleChange}
-                placeholder="e.g., 3 min read"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm"
+                placeholder="e.g., 4 min read"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               />
             </div>
 
             {/* Author */}
             <div className="space-y-1.5">
-              <label className="block text-sm font-semibold text-slate-700">Author</label>
+              <label className="block text-sm font-semibold text-slate-700">Author Name</label>
               <input
                 type="text"
                 name="author"
                 value={formData.author}
                 onChange={handleChange}
-                placeholder="e.g., Travel Desk"
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm"
+                placeholder="e.g., Travel Desk Editorial"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm bg-slate-50/50"
               />
             </div>
 
             {/* Featured Checkbox */}
-            <div className="flex items-center gap-3 pt-6 sm:col-span-2">
+            <div className="flex items-center gap-3 pt-6 sm:col-span-2 bg-slate-50 p-4 rounded-xl border border-slate-200/60">
               <input
                 type="checkbox"
                 name="featured"
                 id="featured"
                 checked={formData.featured}
                 onChange={handleChange}
-                className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500"
+                className="w-5 h-5 text-emerald-600 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer"
               />
               <label htmlFor="featured" className="text-sm font-semibold text-slate-700 cursor-pointer">
-                Mark as Featured News (🔥)
+                🔥 Mark as Featured Article
               </label>
             </div>
 
             {/* Excerpt */}
             <div className="space-y-1.5 sm:col-span-2">
-              <label className="block text-sm font-semibold text-slate-700">Short Excerpt <span className="text-rose-500">*</span></label>
+              <label className="block text-sm font-semibold text-slate-700">Short Excerpt / Summary <span className="text-rose-500">*</span></label>
               <textarea
                 name="excerpt"
                 rows={2}
                 value={formData.excerpt}
                 onChange={handleChange}
-                placeholder="Write a brief summary for the card view..."
+                placeholder="Write a catchy summary for card view..."
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm resize-none bg-slate-50/50"
               />
             </div>
 
             {/* Content */}
             <div className="space-y-1.5 sm:col-span-2">
-              <label className="block text-sm font-semibold text-slate-700">Full Content <span className="text-rose-500">*</span></label>
+              <label className="block text-sm font-semibold text-slate-700">Full Content Body <span className="text-rose-500">*</span></label>
               <textarea
                 name="content"
-                rows={6}
+                rows={7}
                 value={formData.content}
                 onChange={handleChange}
-                placeholder="Write the full detailed news article or highlights..."
+                placeholder="Write full article description in detail..."
                 required
-                className="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm resize-none"
+                className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:outline-none focus:border-emerald-500 text-sm resize-none bg-slate-50/50"
               />
             </div>
 
-          </div>
+            {/* Submit Button Section Added */}
+            <div className="flex items-center justify-end gap-4 pt-4 border-t border-slate-200/60 sm:col-span-2">
+              <Link
+                href="/news"
+                className="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-sm font-semibold rounded-xl transition"
+              >
+                Cancel
+              </Link>
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="inline-flex items-center gap-2 px-8 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl transition shadow-lg shadow-emerald-600/20 disabled:opacity-50"
+              >
+                {isSubmitting ? (
+                  <>
+                    <FaSpinner className="animate-spin text-sm" />
+                    <span>Publishing...</span>
+                  </>
+                ) : (
+                  <span>Publish Article</span>
+                )}
+              </button>
+            </div>
 
-          {/* Submit Button */}
-          <div className="pt-4 border-t border-slate-100 flex justify-end">
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-md shadow-emerald-600/25 transition disabled:opacity-50"
-            >
-              {isSubmitting ? (
-                <>
-                  <FaSpinner className="animate-spin text-sm" />
-                  <span>Publishing News...</span>
-                </>
-              ) : (
-                <span>Publish Article</span>
-              )}
-            </button>
           </div>
-
         </form>
       </div>
     </div>

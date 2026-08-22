@@ -20,7 +20,7 @@ export default function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
 
@@ -34,6 +34,7 @@ export default function RegisterPage() {
     await handleSignUp(
       { email, password, name },
       () => {
+        setLoading(false); 
         router.push("/dashboard");
         router.refresh();
       },

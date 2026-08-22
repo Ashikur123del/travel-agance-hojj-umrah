@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/sliders`;
+const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/sliders`; // /api যুক্ত করা হয়েছে
 
 export async function createSliderAction(formData: FormData) {
   try {

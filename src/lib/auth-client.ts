@@ -1,5 +1,5 @@
 import { createAuthClient } from "better-auth/react";
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:5000" // Aapnar Express backend server URL
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://travel-agence-server.vercel.app",
 });

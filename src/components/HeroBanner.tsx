@@ -16,6 +16,7 @@ import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 import { getSliders } from "@/lib/serviceapi/slider.service";
 
+
 interface Slide {
   id: string | number;
   image: string;
@@ -85,7 +86,7 @@ const HeroBanner = () => {
 
   if (loading) {
     return (
-      <section className="relative h-[70vh] min-h-[500px] w-full bg-slate-950 flex items-center justify-center text-white">
+      <section className="relative h-[80vh] min-h-[500px] w-full bg-slate-950 flex items-center justify-center text-white">
         <p className="text-base animate-pulse text-amber-400">
           Loading Banners...
         </p>
