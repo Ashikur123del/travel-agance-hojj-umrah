@@ -1,58 +1,51 @@
- "use client";
+"use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaImages, FaArrowRight, FaPhone, FaEnvelope } from "react-icons/fa";
+import { FaImages, FaArrowRight, FaPhone, FaEnvelope, FaSpinner } from "react-icons/fa";
+import { toast } from "react-toastify";
 import ServiceHero from "../services/ServiceHero";
 
 interface GalleryItem {
-  id: number;
+  id: string;
   title: string;
   category: string;
   imageUrl: string;
 }
 
-const galleryImages: GalleryItem[] = [
-  {
-    id: 1,
-    title: "Luxury Resort Stay",
-    category: "Hotels",
-    imageUrl: "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 2,
-    title: "Modern Bedroom Suite",
-    category: "Rooms",
-    imageUrl: "https://images.unsplash.com/photo-1618773928121-c32242e63f39?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 3,
-    title: "Beachfront Villa",
-    category: "Resorts",
-    imageUrl: "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 4,
-    title: "Fine Dining Restaurant",
-    category: "Dining",
-    imageUrl: "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 5,
-    title: "Infinity Swimming Pool",
-    category: "Amenities",
-    imageUrl: "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?auto=format&fit=crop&w=800&q=80",
-  },
-  {
-    id: 6,
-    title: "Executive Hotel Lobby",
-    category: "Hotels",
-    imageUrl: "https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80",
-  },
-];
-
 export default function GalleryPage() {
+  const [galleryImages, setGalleryImages] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Fetch galleries from API
+  useEffect(() => {
+    const fetchGalleries = async () => {
+      try {
+        setLoading(true);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/gallery`, {
+          cache: "no-store",
+        });
+        const result = await res.json();
+        
+        if (res.ok || result.success) {
+          const items = Array.isArray(result) ? result : result.data || [];
+          setGalleryImages(items);
+        } else {
+          toast.error(result.message || "Failed to fetch galleries");
+        }
+      } catch (error) {
+        console.error("Error fetching galleries:", error);
+        toast.error("Something went wrong while fetching!");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchGalleries();
+  }, []);
+
   return (
     <main className="relative min-h-screen overflow-hidden bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 text-slate-800">
       {/* Complete Emerald + Amber + Teal + Slate + White decorative palette */}
@@ -108,42 +101,53 @@ export default function GalleryPage() {
             </p>
           </motion.div>
 
-          {/* GRID */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            {galleryImages.map((item, index) => (
-              <motion.div
-                key={item.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.08 }}
-                viewport={{ once: true }}
-                whileHover={{ y: -6 }}
-                className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-white via-white to-emerald-50/20 shadow-md shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60"
-              >
-                <div className="relative h-64 w-full overflow-hidden bg-gradient-to-br from-slate-50 to-amber-50/30">
-                  <Image
-                    src={item.imageUrl}
-                    alt={item.title}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover transition-transform duration-500 group-hover:scale-110"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                  <span className="absolute top-3 left-3 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-slate-700 shadow-sm z-10">
-                    {item.category}
-                  </span>
-                </div>
+          {/* LOADING & DATA RENDER */}
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <FaSpinner className="animate-spin text-3xl text-emerald-600" />
+            </div>
+          ) : galleryImages.length === 0 ? (
+            <div className="text-center py-20 bg-white/60 backdrop-blur-sm rounded-3xl border border-slate-200 max-w-xl mx-auto shadow-sm">
+              <p className="text-slate-500 text-sm">No gallery items found.</p>
+            </div>
+          ) : (
+            /* GRID */
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+              {galleryImages.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.08 }}
+                  viewport={{ once: true }}
+                  whileHover={{ y: -6 }}
+                  className="group relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-b from-white via-white to-emerald-50/20 shadow-md shadow-slate-200/50 transition-all duration-300 hover:border-emerald-300 hover:shadow-2xl hover:shadow-emerald-100/60"
+                >
+                  <div className="relative h-64 w-full overflow-hidden bg-gradient-to-br from-slate-50 to-amber-50/30">
+                    <Image
+                      src={item.imageUrl}
+                      alt={item.title}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/20 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <span className="absolute top-3 left-3 rounded-full bg-white/90 backdrop-blur-md px-3 py-1 text-xs font-bold text-slate-700 shadow-sm z-10">
+                      {item.category}
+                    </span>
+                  </div>
 
-                <div className="p-5">
-                  <h3 className="text-lg font-bold text-slate-900 transition-colors duration-300 group-hover:text-emerald-700">
-                    {item.title}
-                  </h3>
-                </div>
+                  <div className="p-5">
+                    <h3 className="text-lg font-bold text-slate-900 transition-colors duration-300 group-hover:text-emerald-700 line-clamp-1">
+                      {item.title}
+                    </h3>
+                  </div>
 
-                <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-amber-500/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-              </motion.div>
-            ))}
-          </div>
+                  <div className="pointer-events-none absolute inset-0 rounded-3xl bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-amber-500/[0.04] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
       </section>
 

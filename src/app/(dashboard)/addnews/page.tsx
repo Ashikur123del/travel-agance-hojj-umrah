@@ -226,7 +226,7 @@ export default function AddNewsPage() {
             <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-slate-700">Display Date <span className="text-rose-500">*</span></label>
               <input
-                type="text"
+                type="date"
                 name="date"
                 value={formData.date}
                 onChange={handleChange}
@@ -240,7 +240,7 @@ export default function AddNewsPage() {
             <div className="space-y-1.5">
               <label className="block text-sm font-semibold text-slate-700">Read Time</label>
               <input
-                type="text"
+                type="time"
                 name="readTime"
                 value={formData.readTime}
                 onChange={handleChange}

@@ -1,5 +1,5 @@
 export const getSliders = async () => {
-  try {
+ try {
     const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/sliders`;
 
     const res = await fetch(API_URL, {
@@ -11,11 +11,14 @@ export const getSliders = async () => {
     }
 
     const data = await res.json();
+    console.log("API Response Data:", data); // <-- Ekhane check kore dekho ki asche
     
     if (Array.isArray(data)) {
       return data;
     } else if (data.sliders && Array.isArray(data.sliders)) {
       return data.sliders;
+    } else if (data.data && Array.isArray(data.data)) { // Kono kono API te data.datao thake
+      return data.data;
     }
     
     return [];
@@ -58,4 +61,33 @@ export const getNews = async () => {
 
 
 
+export const getGalleries = async () => {
+  try {
+    const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/gallery`;
+
+    const res = await fetch(API_URL, {
+      cache: "no-store", 
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch galleries");
+    }
+
+    const data = await res.json();
+    
+    
+    if (Array.isArray(data)) {
+      return data;
+    } else if (data.data && Array.isArray(data.data)) {
+      return data.data;
+    } else if (data.galleries && Array.isArray(data.galleries)) {
+      return data.galleries;
+    }
+    
+    return [];
+  } catch (error) {
+    console.error("Error fetching galleries:", error);
+    return [];
+  }
+};
 

@@ -16,15 +16,15 @@ import "swiper/css/navigation";
 import "swiper/css/effect-fade";
 import { getSliders } from "@/lib/serviceapi/slider.service";
 
-
+// Prisma schema er sathe match kore interface update kora holo
 interface Slide {
   id: string | number;
   image: string;
-  altText: string;
-  text: string;
-  hed: string;
+  alt?: string;
+  firstText: string;
+  highlightText: string;
   secondText: string;
-  dsc: string;
+  description: string;
 }
 
 const HeroBanner = () => {
@@ -36,7 +36,7 @@ const HeroBanner = () => {
     const fetchBanners = async () => {
       try {
         const data = await getSliders();
-        setSlides(data);
+        setSlides(data || []);
       } catch (error) {
         console.error("Failed to load sliders:", error);
       } finally {
@@ -65,7 +65,7 @@ const HeroBanner = () => {
     },
   };
 
-  const highlightText = {
+  const highlightTextAnim = {
     hidden: { opacity: 0, x: 100, scale: 0.82 },
     show: {
       opacity: 1,
@@ -103,6 +103,7 @@ const HeroBanner = () => {
       <Swiper
         modules={[Autoplay, Pagination, EffectFade]}
         effect="fade"
+        fadeEffect={{ crossFade: true }}
         spaceBetween={0}
         slidesPerView={1}
         autoplay={{
@@ -113,19 +114,19 @@ const HeroBanner = () => {
           clickable: true,
           dynamicBullets: true,
         }}
-        loop
+        loop={true}
         onSlideChange={(swiper) => {
           setActiveIndex(swiper.realIndex);
         }}
         className="hero-swiper h-full w-full"
       >
         {slides.map((slide, index) => {
-          const rawImage = slide.image || "";
+          const rawImage = slide?.image || "";
           const imageUrl = rawImage.startsWith("http")
             ? rawImage
             : rawImage.startsWith("/")
-              ? rawImage
-              : `/${rawImage}`;
+            ? rawImage
+            : `/${rawImage}`;
 
           return (
             <SwiperSlide key={slide.id || index}>
@@ -138,8 +139,9 @@ const HeroBanner = () => {
                 >
                   <Image
                     src={imageUrl}
-                    alt={slide.altText || "Slide"}
+                    alt={slide.alt || "Slide image"}
                     fill
+                    priority={index === 0}
                     unoptimized={true}
                     className="object-cover"
                   />
@@ -227,20 +229,23 @@ const HeroBanner = () => {
                               </motion.div>
                             </motion.div>
                           </div>
+                          
                           {/* FIRST TEXT */}
                           <motion.span
                             variants={normalText}
                             className="inline-block"
                           >
-                            {slide.text}
+                            {slide.firstText}
                           </motion.span>{" "}
+                          
                           {/* HIGHLIGHT TEXT */}
                           <motion.span
-                            variants={highlightText}
+                            variants={highlightTextAnim}
                             className="inline-block bg-gradient-to-r from-amber-300 via-orange-300 to-amber-400 bg-clip-text text-transparent"
                           >
-                            {slide.hed}
+                            {slide.highlightText}
                           </motion.span>
+
                           {/* RIGHT PLANE */}
                           <div className="absolute -right-16 -top-12 z-20 hidden sm:block md:-right-28 md:-top-20 lg:-right-36 lg:-top-24">
                             <motion.div
@@ -285,7 +290,9 @@ const HeroBanner = () => {
                               </motion.div>
                             </motion.div>
                           </div>
+                          
                           <br />
+                          
                           {/* SECOND TEXT */}
                           <motion.span
                             variants={secondLine}
@@ -306,7 +313,7 @@ const HeroBanner = () => {
                           }}
                           className="mx-auto mt-3 max-w-2xl text-xs leading-relaxed text-slate-200 sm:text-sm md:text-base"
                         >
-                          {slide.dsc}
+                          {slide.description}
                         </motion.p>
 
                         {/* BUTTONS */}
@@ -383,7 +390,7 @@ const HeroBanner = () => {
         })}
       </Swiper>
 
-      {/* SWIPER PAGINATION */}
+      {/* SWIPER PAGINATION STYLES */}
       <style jsx global>{`
         .hero-swiper .swiper-pagination {
           bottom: 20px !important;
@@ -407,4 +414,4 @@ const HeroBanner = () => {
   );
 };
 
-export default HeroBanner;
+export default HeroBanner; 

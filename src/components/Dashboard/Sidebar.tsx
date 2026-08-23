@@ -12,6 +12,7 @@ import {
   FaSignOutAlt,
   FaPlane,
   FaTachometerAlt,
+  FaRegUser,
 } from "react-icons/fa";
 import { authClient } from "@/lib/auth-client";
 
@@ -36,7 +37,6 @@ export default function DashboardSidebar() {
 
   return (
     <>
-   
       <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-100/70 bg-white/90 px-4 shadow-sm backdrop-blur-md lg:hidden">
         <button
           type="button"
@@ -123,7 +123,7 @@ export default function DashboardSidebar() {
               Dashboard
             </Link>
 
-            {/* Profile (ঠিক করা হয়েছে: /dashboard/profile) */}
+            {/* Hero Slider Add */}
             <Link
               href="/heroslider"
               onClick={closeSidebar}
@@ -133,7 +133,7 @@ export default function DashboardSidebar() {
               Hero Slider Add
             </Link>
 
-            {/* Bookings */}
+            {/* Add a News */}
             <Link
               href="/addnews"
               onClick={closeSidebar}
@@ -143,7 +143,7 @@ export default function DashboardSidebar() {
               Add a News
             </Link>
 
-            {/* Settings */}
+            {/* Add Gallery */}
             <Link
               href="/addgallery"
               onClick={closeSidebar}
@@ -151,6 +151,16 @@ export default function DashboardSidebar() {
             >
               <FaCog className="h-4 w-4 text-amber-300" />
               Add Gallery
+            </Link>
+
+            {/* Contact info */}
+            <Link
+              href="/contactinfo"
+              onClick={closeSidebar}
+              className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
+            >
+              <FaRegUser className="h-4 w-4 text-amber-300" />
+              Contact info
             </Link>
           </nav>
 

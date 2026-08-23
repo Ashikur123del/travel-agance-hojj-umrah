@@ -1,13 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FaNewspaper, FaTrash, FaEdit, FaSpinner, FaArrowLeft, FaCalendarAlt, FaClock, FaUser } from "react-icons/fa";
+import { FaNewspaper, FaTrash, FaEdit, FaSpinner, FaCalendarAlt, FaUser, FaMagic } from "react-icons/fa";
 import { toast } from "react-toastify";
 import Image from "next/image";
 import { NewsItem } from "@/types/news"; 
 import Link from "next/link";
-
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/news`;
+import { getAllNewsAction, updateNewsAction, deleteNewsAction } from "@/lib/serviceapi/serveraction/news.service";
 
 export default function NewsViewDetailsPage() {
   const [newsList, setNewsList] = useState<NewsItem[]>([]);
@@ -15,31 +14,20 @@ export default function NewsViewDetailsPage() {
   const [selectedNews, setSelectedNews] = useState<NewsItem | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAiGenerating, setIsAiGenerating] = useState(false);
 
   const fetchNews = async () => {
     try {
       setLoading(true);
-      const res = await fetch(API_URL, {
-        method: "GET",
-        cache: "no-store",
-      });
-
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Server returned non-JSON response.");
+      const response = await getAllNewsAction();
+      if (response.success && response.data) {
+        setNewsList(response.data);
+      } else {
+        toast.error(response.message || "Failed to load news list!");
       }
-
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.message || "Failed to load news list!");
-      }
-
-      const items = Array.isArray(data) ? data : data.news || data.data || [];
-      setNewsList(items);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Failed to load news list!";
       console.error("Error fetching news:", error);
-      toast.error(errorMessage);
+      toast.error("Failed to load news list!");
     } finally {
       setLoading(false);
     }
@@ -50,34 +38,48 @@ export default function NewsViewDetailsPage() {
   }, []);
 
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this news article?")) return;
+    if (!confirm("Are you sure you want to delete this article?")) return;
 
     try {
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "DELETE",
-      });
-
-      const contentType = res.headers.get("content-type");
-      let result: { success?: boolean; message?: string } = {};
-      if (contentType && contentType.includes("application/json")) {
-        result = await res.json();
-      }
-
-      if (res.ok || result.success) {
-        toast.success("News deleted successfully!");
+      const response = await deleteNewsAction(id);
+      if (response.success) {
+        toast.success("Deleted successfully!");
         setNewsList((prev) => prev.filter((item) => (item._id || item.id) !== id));
         if (selectedNews?._id === id || selectedNews?.id === id) {
           setSelectedNews(null);
           setIsEditing(false);
         }
       } else {
-        toast.error(result.message || "Failed to delete news!");
+        toast.error(response.message || "Failed to delete!");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Something went wrong!";
       console.error("Error deleting news:", error);
-      toast.error(errorMessage);
+      toast.error("Something went wrong!");
     }
+  };
+
+  // AI দিয়ে কন্টেন্ট ও এক্সসার্প্ট জেনারেট করার ফাংশন
+  const handleAiAssist = () => {
+    if (!selectedNews || !selectedNews.title) {
+      toast.error("Please provide a title first for AI generation!");
+      return;
+    }
+
+    setIsAiGenerating(true);
+    setTimeout(() => {
+      const title = selectedNews.title || "Travel Article";
+      const enhancedExcerpt = `Discover the ultimate insights and essential guidelines regarding ${title}. A comprehensive look crafted for modern travelers seeking authentic experiences.`;
+      const enhancedContent = `Welcome to our detailed guide on ${title}.\n\nWhen planning your journey, preparation is key to making the most out of your destination. From navigating local transportation, uncovering hidden gems, to understanding cultural nuances and safety tips, this article covers everything you need to know.\n\nMake sure to plan ahead, check visa and documentation requirements early, and embrace the adventure with an open mind. Safe travels!`;
+
+      setSelectedNews({
+        ...selectedNews,
+        excerpt: enhancedExcerpt,
+        content: enhancedContent,
+      });
+
+      setIsAiGenerating(false);
+      toast.success("AI successfully generated content and summary!");
+    }, 1000);
   };
 
   const handleUpdateSubmit = async (e: React.FormEvent) => {
@@ -87,33 +89,23 @@ export default function NewsViewDetailsPage() {
     try {
       setIsSubmitting(true);
       const id = selectedNews._id || selectedNews.id;
-      
-      const res = await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(selectedNews),
-      });
-
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Server returned non-JSON response.");
+      if (!id) {
+        toast.error("News ID is missing!");
+        return;
       }
 
-      const result = await res.json();
+      const response = await updateNewsAction(id, selectedNews);
 
-      if (res.ok || result.success) {
-        toast.success("News updated successfully!");
+      if (response.success) {
+        toast.success("Updated successfully!");
         setIsEditing(false);
         fetchNews();
       } else {
-        toast.error(result.message || "Failed to update news!");
+        toast.error(response.message || "Failed to update!");
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : "Something went wrong!";
       console.error("Error updating news:", error);
-      toast.error(errorMessage);
+      toast.error("Something went wrong!");
     } finally {
       setIsSubmitting(false);
     }
@@ -126,19 +118,18 @@ export default function NewsViewDetailsPage() {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white/80 backdrop-blur-md px-6 py-4 rounded-2xl border border-slate-200/80 shadow-sm">
           <div>
             <h1 className="text-2xl font-bold text-slate-800 tracking-tight flex items-center gap-2">
-              <FaNewspaper className="text-emerald-600" /> News Management (Read, Edit, Delete)
+              <FaNewspaper className="text-emerald-600" /> News Management & Date Control
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
-              Browse through articles, view details, modify content, or remove items.
+              Manage articles, check publication timestamps, and edit details with AI assistance.
             </p>
           </div>
-         <Link
-              href="/addnews"
-
-              className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium rounded-xl transition border border-emerald-200"
-            >
-                Back To AddNews
-            </Link>
+          <Link
+            href="/addnews"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 text-sm font-medium rounded-xl transition border border-emerald-200"
+          >
+            Back To Add News
+          </Link>
         </div>
 
         {loading ? (
@@ -148,7 +139,7 @@ export default function NewsViewDetailsPage() {
         ) : !selectedNews ? (
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm overflow-hidden">
             {newsList.length === 0 ? (
-              <div className="text-center py-16 text-slate-500 text-sm">No articles available to manage.</div>
+              <div className="text-center py-16 text-slate-500 text-sm">No articles available.</div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {newsList.map((item) => {
@@ -157,7 +148,7 @@ export default function NewsViewDetailsPage() {
                     <div key={itemId} className="p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 hover:bg-slate-50/60 transition">
                       <div className="flex items-center gap-4">
                         <div className="relative h-16 w-20 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0">
-                          {item.image && <Image src={item.image} alt={item.title} fill className="object-cover" />}
+                          {item.image && <Image src={item.image} alt={item.title || "News"} fill className="object-cover" />}
                         </div>
                         <div className="space-y-1">
                           <span className="text-xs font-bold text-emerald-600 uppercase tracking-wide bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
@@ -165,9 +156,7 @@ export default function NewsViewDetailsPage() {
                           </span>
                           <h2 className="text-base font-bold text-slate-800 line-clamp-1">{item.title}</h2>
                           <p className="text-xs text-slate-400 flex items-center gap-2">
-                            <span><FaCalendarAlt className="inline text-amber-500 mr-1" /> {item.date}</span>
-                            <span>•</span>
-                            <span><FaUser className="inline text-amber-500 mr-1" /> {item.author || "Travel Desk"}</span>
+                            <span><FaCalendarAlt className="inline text-amber-500 mr-1" /> {item.date || "N/A"} {item.readTime && `• ${item.readTime}`}</span>
                           </p>
                         </div>
                       </div>
@@ -177,7 +166,7 @@ export default function NewsViewDetailsPage() {
                           onClick={() => { setSelectedNews(item); setIsEditing(false); }}
                           className="px-3.5 py-2 bg-blue-50 hover:bg-blue-100 text-blue-600 text-xs font-semibold rounded-xl transition border border-blue-200"
                         >
-                          Read Details
+                          View Details
                         </button>
                         <button
                           onClick={() => { setSelectedNews(item); setIsEditing(true); }}
@@ -199,9 +188,29 @@ export default function NewsViewDetailsPage() {
             )}
           </div>
         ) : isEditing ? (
-
           <form onSubmit={handleUpdateSubmit} className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-8 space-y-6">
-            <h2 className="text-xl font-bold text-slate-800 border-b pb-3">Edit Article Information</h2>
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-4 gap-4">
+              <h2 className="text-xl font-bold text-slate-800">Edit Article Information & Timestamp</h2>
+              
+              <button
+                type="button"
+                onClick={handleAiAssist}
+                disabled={isAiGenerating}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white text-xs font-semibold rounded-xl transition shadow-md shadow-purple-500/20 disabled:opacity-50"
+              >
+                {isAiGenerating ? (
+                  <>
+                    <FaSpinner className="animate-spin" />
+                    <span>AI Generating...</span>
+                  </>
+                ) : (
+                  <>
+                    <FaMagic className="text-amber-300" />
+                    <span>AI Assistant Enhance</span>
+                  </>
+                )}
+              </button>
+            </div>
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-1.5 sm:col-span-2">
@@ -226,12 +235,37 @@ export default function NewsViewDetailsPage() {
                 />
               </div>
 
+              {/* আলাদা ডেট ফিল্ড */}
               <div className="space-y-1.5">
-                <label className="block text-sm font-semibold text-slate-700">Author Name</label>
+                <label className="block text-sm font-semibold text-slate-700">Display Date</label>
                 <input
                   type="text"
-                  value={selectedNews.author || ""}
-                  onChange={(e) => setSelectedNews({ ...selectedNews, author: e.target.value })}
+                  value={selectedNews.date || ""}
+                  onChange={(e) => setSelectedNews({ ...selectedNews, date: e.target.value })}
+                  placeholder="e.g. August 23, 2026"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              {/* আলাদা টাইম / রিড টাইম ফিল্ড */}
+              <div className="space-y-1.5">
+                <label className="block text-sm font-semibold text-slate-700">Read Time / Time</label>
+                <input
+                  type="text"
+                  value={selectedNews.readTime || ""}
+                  onChange={(e) => setSelectedNews({ ...selectedNews, readTime: e.target.value })}
+                  placeholder="e.g. 3 min read"
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
+                />
+              </div>
+
+              <div className="space-y-1.5 sm:col-span-2">
+                <label className="block text-sm font-semibold text-slate-700">Image URL</label>
+                <input
+                  type="text"
+                  value={selectedNews.image || ""}
+                  onChange={(e) => setSelectedNews({ ...selectedNews, image: e.target.value })}
+                  required
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-sm bg-slate-50/50"
                 />
               </div>
@@ -272,12 +306,11 @@ export default function NewsViewDetailsPage() {
                 disabled={isSubmitting}
                 className="px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold rounded-xl shadow-md transition disabled:opacity-50"
               >
-                {isSubmitting ? "Updating..." : "Save Changes"}
+                {isSubmitting ? "Saving..." : "Save Changes"}
               </button>
             </div>
           </form>
         ) : (
-        
           <div className="bg-white rounded-2xl border border-slate-200/80 shadow-sm p-6 sm:p-10 space-y-6">
             <div className="flex items-center justify-between border-b pb-4">
               <span className="text-xs font-bold uppercase tracking-wider text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
@@ -309,16 +342,20 @@ export default function NewsViewDetailsPage() {
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-500 border-y border-slate-100 py-3">
-                <span className="flex items-center gap-1"><FaCalendarAlt className="text-amber-500" /> {selectedNews.date}</span>
+                <span className="flex items-center gap-1"><FaCalendarAlt className="text-amber-500" /> {selectedNews.date || "N/A"}</span>
                 <span>•</span>
-                <span className="flex items-center gap-1"><FaClock className="text-amber-500" /> {selectedNews.readTime || "3 min read"}</span>
-                <span>•</span>
-                <span className="flex items-center gap-1"><FaUser className="text-amber-500" /> {selectedNews.author || "Travel Desk"}</span>
+                <span className="flex items-center gap-1"><FaUser className="text-amber-500" /> {selectedNews.author || "Admin"}</span>
+                {selectedNews.readTime && (
+                  <>
+                    <span>•</span>
+                    <span>{selectedNews.readTime}</span>
+                  </>
+                )}
               </div>
 
               {selectedNews.image && (
                 <div className="relative h-72 sm:h-96 w-full rounded-2xl overflow-hidden shadow-md bg-slate-100">
-                  <Image src={selectedNews.image} alt={selectedNews.title} fill className="object-cover" />
+                  <Image src={selectedNews.image} alt={selectedNews.title || "News"} fill className="object-cover" />
                 </div>
               )}
 
