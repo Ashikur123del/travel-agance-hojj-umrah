@@ -7,12 +7,20 @@ import { ServiceItem } from "@/types/types";
 
 import NavItem from "./Navitem";
 import LanguageToggle from "../LanguageToggle";
-import LogoImg from "@/assets/logo.png";
-import Image from "next/image";
+
 
 const menuData: ServiceItem[] = [
   { title: "Home", href: "/" },
-  { title: "About Us", href: "/about" },
+  {
+    title: "About Us",
+    href: "/about",
+    subItems: [
+      {
+      title: "Our Owner",
+      href: "/our-partners", 
+    },
+    ],
+  },
   {
     title: "Services",
     href: "/services",
@@ -91,11 +99,16 @@ export default function Navbar() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex-shrink-0 relative">
-            <Link href="/" className="flex items-center gap-2">
-              <Image width={150} height={150} src={LogoImg} alt="Logo" />
-              <span className="absolute top-6 left-[134px]  text-2xl font-bold tracking-wide bg-gradient-to-r from-white via-indigo-100 to-amber-300 bg-clip-text text-transparent notranslate">
-                Travel<span className="text-amber-400">Agency</span>
-              </span>
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="flex flex-col">
+                <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-white via-indigo-100 to-cyan-200 bg-clip-text text-transparent">
+                  Madina{" "}
+                  <span className="bg-gradient-to-r from-amber-600 via-emerald-600 to-amber-700 bg-clip-text text-transparent">
+                    Hajj Umrah
+                  </span>{" "}
+                  Travel
+                </span>
+              </div>
             </Link>
           </div>
           <div className="hidden md:block">

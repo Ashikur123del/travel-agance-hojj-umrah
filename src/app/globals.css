@@ -6,7 +6,13 @@
   font-family: "Hind Siliguri", sans-serif;
 }
 
-/* গুগলের টপ ব্যানার এবং পপআপ হাইড করার সঠিক নিয়ম */
+.via-emerald-600 {
+    --tw-gradient-via: lab(88 -92.27 39.42);
+    --tw-gradient-via-stops: var(--tw-gradient-position), lab(77 29.97 69.9) var(--tw-gradient-from-position), var(--tw-gradient-via) var(--tw-gradient-via-position), lab(76 37.1 58.91) var(--tw-gradient-to-position);
+    --tw-gradient-stops: var(--tw-gradient-via-stops);
+}
+
+
 .goog-te-banner-frame,
 .goog-te-banner,
 .goog-te-balloon-frame,

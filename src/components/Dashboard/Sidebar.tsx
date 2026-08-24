@@ -14,21 +14,18 @@ import {
   FaTachometerAlt,
   FaRegUser,
 } from "react-icons/fa";
-import { authClient } from "@/lib/auth-client";
 
 export default function DashboardSidebar() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login");
-          router.refresh();
-        },
-      },
-    });
+    localStorage.removeItem("isLoggedIn");
+    document.cookie = "__Secure-better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=lax";
+    document.cookie = "better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=lax";
+
+    router.push("/login");
+    router.refresh();
   };
 
   const closeSidebar = () => {
@@ -83,9 +80,6 @@ export default function DashboardSidebar() {
           }
         `}
       >
-        {/* =========================
-            LOGO
-        ========================= */}
         <div className="flex h-20 items-center justify-between border-b border-white/10 px-6">
           <Link
             href="/"
@@ -104,16 +98,12 @@ export default function DashboardSidebar() {
           </button>
         </div>
 
-        {/* =========================
-            NAVIGATION
-        ========================= */}
         <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">
           <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-200/70">
             Dashboard
           </p>
 
           <nav className="space-y-2">
-            {/* Dashboard */}
             <Link
               href="/dashboard"
               onClick={closeSidebar}
@@ -123,7 +113,6 @@ export default function DashboardSidebar() {
               Dashboard
             </Link>
 
-            {/* Hero Slider Add */}
             <Link
               href="/heroslider"
               onClick={closeSidebar}
@@ -133,7 +122,6 @@ export default function DashboardSidebar() {
               Hero Slider Add
             </Link>
 
-            {/* Add a News */}
             <Link
               href="/addnews"
               onClick={closeSidebar}
@@ -143,7 +131,6 @@ export default function DashboardSidebar() {
               Add a News
             </Link>
 
-            {/* Add Gallery */}
             <Link
               href="/addgallery"
               onClick={closeSidebar}
@@ -153,7 +140,6 @@ export default function DashboardSidebar() {
               Add Gallery
             </Link>
 
-            {/* Contact info */}
             <Link
               href="/contactinfo"
               onClick={closeSidebar}
@@ -166,7 +152,6 @@ export default function DashboardSidebar() {
 
           <div className="flex-1" />
 
-          {/* Back Website */}
           <Link
             href="/"
             onClick={closeSidebar}
@@ -176,7 +161,6 @@ export default function DashboardSidebar() {
             Back to Website
           </Link>
 
-          {/* Logout */}
           <button
             type="button"
             onClick={handleLogout}
@@ -187,9 +171,6 @@ export default function DashboardSidebar() {
           </button>
         </div>
 
-        {/* =========================
-            FOOTER
-        ========================= */}
         <div className="border-t border-white/10 p-4">
           <p className="text-center text-xs text-teal-200/60">
             © 2026 TravelAgence
