@@ -135,8 +135,7 @@ const partnersData: Partner[] = [
 
 const OurPartnersPage: React.FC = () => {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/60 via-white to-amber-50/40 py-16 md:py-20 lg:py-24">
-
+    <section className="relative overflow-hidden bg-gradient-to-br from-emerald-50/60 via-white to-amber-50/40 py-12 sm:py-14 md:py-16 lg:py-20">
       {/* ================================================= */}
       {/* Background */}
       {/* ================================================= */}
@@ -156,7 +155,6 @@ const OurPartnersPage: React.FC = () => {
       {/* ================================================= */}
 
       <div className="container relative mx-auto px-4 sm:px-6 lg:px-8">
-
         {/* ================================================= */}
         {/* Header */}
         {/* ================================================= */}
@@ -166,42 +164,45 @@ const OurPartnersPage: React.FC = () => {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="mb-10 text-center md:mb-12"
+          className="mb-8 text-center sm:mb-10 md:mb-12"
         >
-          <div className="mb-4 flex items-center justify-center gap-3">
+          {/* Badge */}
 
-            <span className="h-px w-8 bg-gradient-to-r from-transparent to-emerald-500" />
+          <div className="mb-4 flex items-center justify-center gap-2 sm:gap-3">
+            <span className="hidden h-px w-8 bg-gradient-to-r from-transparent to-emerald-500 xs:block" />
 
-            <span className="rounded-full bg-emerald-500/10 px-4 py-1.5 font-mono text-xs font-semibold uppercase tracking-[0.22em] text-emerald-700">
+            <span className="rounded-full bg-emerald-500/10 px-3 py-1.5 font-mono text-[10px] font-semibold uppercase tracking-[0.16em] text-emerald-700 sm:px-4 sm:text-xs sm:tracking-[0.22em]">
               Board of Directors & Owners
             </span>
 
-            <span className="h-px w-8 bg-gradient-to-l from-transparent to-emerald-500" />
-
+            <span className="hidden h-px w-8 bg-gradient-to-l from-transparent to-emerald-500 xs:block" />
           </div>
 
-          <h2 className="text-3xl font-extrabold leading-tight text-slate-900 sm:text-4xl md:text-5xl">
+          {/* Heading */}
+
+          <h2 className="text-2xl font-extrabold leading-tight text-slate-900 sm:text-3xl md:text-4xl lg:text-5xl">
             Meet Our Respected{" "}
             <span className="bg-gradient-to-r from-emerald-700 via-amber-600 to-emerald-800 bg-clip-text text-transparent">
               Agency Partners & Owners
             </span>
           </h2>
 
-          <p className="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          {/* Description */}
+
+          <p className="mx-auto mt-3 max-w-2xl px-2 text-sm leading-6 text-slate-600 sm:text-base sm:leading-relaxed md:text-lg">
             The visionary leaders and directors steering our travel agency
             toward excellence, transparency, and devotion.
           </p>
         </motion.div>
 
         {/* ================================================= */}
-        {/* Partners */}
-        {/* ONE PARTNER = ONE FULL ROW */}
+        {/* Partners Grid */}
+        {/* Mobile: 1 column */}
+        {/* Large: 2 columns */}
         {/* ================================================= */}
 
-        <div className="grid grid-cols-1  md:grid-cols-2">
-
+        <div className="grid grid-cols-1 gap-4 sm:gap-5 lg:grid-cols-2">
           {partnersData.map((partner) => (
-
             <motion.div
               key={partner.id}
               initial={{ opacity: 0, y: 20 }}
@@ -221,7 +222,7 @@ const OurPartnersPage: React.FC = () => {
                 border
                 border-slate-200/80
                 bg-white/90
-                p-4
+                p-3
                 shadow-md
                 shadow-slate-200/40
                 backdrop-blur-xl
@@ -230,16 +231,31 @@ const OurPartnersPage: React.FC = () => {
                 hover:border-emerald-300
                 hover:shadow-xl
                 hover:shadow-emerald-100/50
-                sm:p-5
+
+                sm:p-4
+                md:p-5
               "
             >
-
               {/* ================================================= */}
-              {/* ONE ROW CONTENT */}
+              {/* Card Content */}
               {/* ================================================= */}
 
-              <div className="flex w-full flex-row items-center gap-4 sm:gap-5 lg:gap-7">
+              <div
+                className="
+                  flex
+                  w-full
+                  flex-col
+                  gap-4
 
+                  sm:gap-5
+
+                  lg:flex-row
+                  lg:items-center
+                  lg:gap-5
+
+                  xl:gap-6
+                "
+              >
                 {/* ================================================= */}
                 {/* LEFT PERSON IMAGE */}
                 {/* ================================================= */}
@@ -247,8 +263,9 @@ const OurPartnersPage: React.FC = () => {
                 <div
                   className="
                     relative
-                    h-40
-                    w-28
+                    mx-auto
+                    h-44
+                    w-32
                     shrink-0
                     overflow-hidden
                     rounded-2xl
@@ -260,11 +277,15 @@ const OurPartnersPage: React.FC = () => {
                     duration-300
                     group-hover:border-emerald-500
 
-                    sm:h-44
-                    sm:w-32
+                    sm:h-48
+                    sm:w-36
 
-                    lg:h-48
-                    lg:w-36
+                    lg:mx-0
+                    lg:h-40
+                    lg:w-28
+
+                    xl:h-44
+                    xl:w-32
                   "
                 >
                   <Image
@@ -272,9 +293,10 @@ const OurPartnersPage: React.FC = () => {
                     alt={partner.name}
                     fill
                     sizes="
-                      (max-width: 640px) 112px,
-                      (max-width: 1024px) 128px,
-                      144px
+                      (max-width: 640px) 128px,
+                      (max-width: 1024px) 144px,
+                      (max-width: 1280px) 112px,
+                      128px
                     "
                     className="
                       object-cover
@@ -290,17 +312,14 @@ const OurPartnersPage: React.FC = () => {
                 {/* MIDDLE TEXT */}
                 {/* ================================================= */}
 
-                <div className="min-w-0 flex-1 self-stretch">
-
+                <div className="min-w-0 flex-1">
                   <div className="flex h-full flex-col justify-between">
-
                     <div>
-
                       {/* Name */}
 
                       <h3
                         className="
-                          text-base
+                          text-lg
                           font-bold
                           leading-tight
                           text-slate-800
@@ -308,9 +327,11 @@ const OurPartnersPage: React.FC = () => {
                           duration-300
                           group-hover:text-emerald-700
 
-                          sm:text-lg
+                          sm:text-xl
 
-                          lg:text-xl
+                          lg:text-base
+
+                          xl:text-lg
                         "
                       >
                         {partner.name}
@@ -334,10 +355,24 @@ const OurPartnersPage: React.FC = () => {
 
                       {/* Bio */}
 
-                      <p className="max-w-3xl text-[12px] leading-5 text-slate-600 sm:text-[13px] sm:leading-6">
+                      <p
+                        className="
+                          text-[12px]
+                          leading-5
+                          text-slate-600
+
+                          sm:text-[13px]
+                          sm:leading-6
+
+                          lg:text-[11px]
+                          lg:leading-5
+
+                          xl:text-[12px]
+                          xl:leading-5
+                        "
+                      >
                         {partner.bio}
                       </p>
-
                     </div>
 
                     {/* ================================================= */}
@@ -345,14 +380,13 @@ const OurPartnersPage: React.FC = () => {
                     {/* ================================================= */}
 
                     <div className="mt-3 flex gap-2 sm:mt-4">
-
                       <Link
                         href={partner.socials.facebook}
                         aria-label={`${partner.name} Facebook`}
                         className="
                           flex
-                          h-7
-                          w-7
+                          h-8
+                          w-8
                           items-center
                           justify-center
                           rounded-full
@@ -364,9 +398,6 @@ const OurPartnersPage: React.FC = () => {
                           hover:border-emerald-300
                           hover:bg-emerald-50
                           hover:text-emerald-600
-
-                          sm:h-8
-                          sm:w-8
                         "
                       >
                         <FaFacebookF className="h-3 w-3" />
@@ -377,8 +408,8 @@ const OurPartnersPage: React.FC = () => {
                         aria-label={`${partner.name} Twitter`}
                         className="
                           flex
-                          h-7
-                          w-7
+                          h-8
+                          w-8
                           items-center
                           justify-center
                           rounded-full
@@ -390,9 +421,6 @@ const OurPartnersPage: React.FC = () => {
                           hover:border-amber-300
                           hover:bg-amber-50
                           hover:text-amber-600
-
-                          sm:h-8
-                          sm:w-8
                         "
                       >
                         <FaTwitter className="h-3 w-3" />
@@ -403,8 +431,8 @@ const OurPartnersPage: React.FC = () => {
                         aria-label={`${partner.name} LinkedIn`}
                         className="
                           flex
-                          h-7
-                          w-7
+                          h-8
+                          w-8
                           items-center
                           justify-center
                           rounded-full
@@ -416,29 +444,25 @@ const OurPartnersPage: React.FC = () => {
                           hover:border-emerald-300
                           hover:bg-emerald-50
                           hover:text-emerald-700
-
-                          sm:h-8
-                          sm:w-8
                         "
                       >
                         <FaLinkedinIn className="h-3 w-3" />
                       </Link>
-
                     </div>
-
                   </div>
-
                 </div>
 
                 {/* ================================================= */}
-                {/* RIGHT BUSINESS CARD IMAGE - BIGGER */}
+                {/* RIGHT BUSINESS CARD IMAGE */}
                 {/* ================================================= */}
 
                 <div
                   className="
                     relative
-                    h-32
-                    w-48
+                    mx-auto
+                    h-36
+                    w-full
+                    max-w-[300px]
                     shrink-0
                     overflow-hidden
                     rounded-2xl
@@ -451,14 +475,19 @@ const OurPartnersPage: React.FC = () => {
                     group-hover:border-amber-500
                     group-hover:shadow-md
 
-                    sm:h-36
-                    sm:w-52
+                    sm:h-40
+                    sm:max-w-[340px]
 
-                    lg:h-40
-                    lg:w-56
+                    lg:mx-0
+                    lg:h-32
+                    lg:w-44
+                    lg:max-w-none
 
-                    xl:h-44
-                    xl:w-64
+                    xl:h-36
+                    xl:w-52
+
+                    2xl:h-40
+                    2xl:w-56
                   "
                 >
                   <Image
@@ -466,10 +495,12 @@ const OurPartnersPage: React.FC = () => {
                     alt={`${partner.name} business card`}
                     fill
                     sizes="
-                      (max-width: 640px) 192px,
-                      (max-width: 768px) 208px,
-                      (max-width: 1280px) 224px,
-                      256px
+                      (max-width: 640px) 300px,
+                      (max-width: 768px) 340px,
+                      (max-width: 1024px) 100%,
+                      (max-width: 1280px) 176px,
+                      (max-width: 1536px) 208px,
+                      224px
                     "
                     className="
                       object-contain
@@ -481,7 +512,6 @@ const OurPartnersPage: React.FC = () => {
                     "
                   />
                 </div>
-
               </div>
 
               {/* ================================================= */}
@@ -504,11 +534,8 @@ const OurPartnersPage: React.FC = () => {
                   group-hover:opacity-100
                 "
               />
-
             </motion.div>
-
           ))}
-
         </div>
 
         {/* ================================================= */}
@@ -523,11 +550,12 @@ const OurPartnersPage: React.FC = () => {
             delay: 0.4,
           }}
           viewport={{ once: true }}
-          className="mt-8 text-center"
+          className="mt-6 text-center sm:mt-8"
         >
           <p
             className="
               inline-flex
+              max-w-[calc(100%-2rem)]
               items-center
               justify-center
               gap-2
@@ -535,15 +563,19 @@ const OurPartnersPage: React.FC = () => {
               border
               border-emerald-200
               bg-white
-              px-5
+              px-4
               py-2
-              text-xs
+              text-[10px]
               font-semibold
+              leading-4
               text-slate-600
               shadow-sm
+
+              sm:px-5
+              sm:text-xs
             "
           >
-            <span className="text-lg text-amber-500">
+            <span className="shrink-0 text-base text-amber-500 sm:text-lg">
               <ImManWoman />
             </span>
 
@@ -553,7 +585,6 @@ const OurPartnersPage: React.FC = () => {
             </span>
           </p>
         </motion.div>
-
       </div>
     </section>
   );
