@@ -14,18 +14,30 @@ import {
   FaTachometerAlt,
   FaRegUser,
 } from "react-icons/fa";
+import { authClient } from "@/lib/auth-client"; 
 
 export default function DashboardSidebar() {
   const router = useRouter();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  const handleLogout = async () => {
-    localStorage.removeItem("isLoggedIn");
-    document.cookie = "__Secure-better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=lax";
-    document.cookie = "better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; secure; samesite=lax";
+  const { data: session } = authClient.useSession();
+ const userRole = (session?.user as any)?.role; 
 
-    router.push("/login");
-    router.refresh();
+  const handleLogout = async () => {
+    try {
+      await authClient.signOut({
+        fetchOptions: {
+          onSuccess: () => {
+            localStorage.removeItem("isLoggedIn");
+            router.push("/login");
+            router.refresh();
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Logout error:", error);
+      router.push("/login");
+    }
   };
 
   const closeSidebar = () => {
@@ -34,6 +46,7 @@ export default function DashboardSidebar() {
 
   return (
     <>
+      {/* Mobile Top Navigation Header */}
       <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-100/70 bg-white/90 px-4 shadow-sm backdrop-blur-md lg:hidden">
         <button
           type="button"
@@ -59,6 +72,7 @@ export default function DashboardSidebar() {
         </button>
       </header>
 
+      {/* Overlay for mobile drawer */}
       {sidebarOpen && (
         <div
           onClick={closeSidebar}
@@ -66,6 +80,7 @@ export default function DashboardSidebar() {
         />
       )}
 
+      {/* Sidebar Container */}
       <aside
         className={`
           fixed left-0 top-0 z-50 flex h-screen w-72 flex-col
@@ -100,10 +115,11 @@ export default function DashboardSidebar() {
 
         <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">
           <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-200/70">
-            Dashboard
+            {userRole === "admin" ? "Admin Menu" : "User Dashboard"}
           </p>
 
           <nav className="space-y-2">
+            {/* Dashboard Link - সবাই দেখতে পাবে */}
             <Link
               href="/dashboard"
               onClick={closeSidebar}
@@ -113,45 +129,51 @@ export default function DashboardSidebar() {
               Dashboard
             </Link>
 
-            <Link
-              href="/heroslider"
-              onClick={closeSidebar}
-              className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-            >
-              <FaUser className="h-4 w-4 text-emerald-300" />
-              Hero Slider Add
-            </Link>
+            {/* কেবল Admin ইউজাররা নিচের মেনুগুলো দেখতে পাবে */}
+            {userRole === "admin" && (
+              <>
+                <Link
+                  href="/heroslider"
+                  onClick={closeSidebar}
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
+                >
+                  <FaUser className="h-4 w-4 text-emerald-300" />
+                  Hero Slider Add
+                </Link>
 
-            <Link
-              href="/addnews"
-              onClick={closeSidebar}
-              className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-            >
-              <FaPlane className="h-4 w-4 text-cyan-300" />
-              Add a News
-            </Link>
+                <Link
+                  href="/addnews"
+                  onClick={closeSidebar}
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
+                >
+                  <FaPlane className="h-4 w-4 text-cyan-300" />
+                  Add a News
+                </Link>
 
-            <Link
-              href="/addgallery"
-              onClick={closeSidebar}
-              className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-            >
-              <FaCog className="h-4 w-4 text-amber-300" />
-              Add Gallery
-            </Link>
+                <Link
+                  href="/addgallery"
+                  onClick={closeSidebar}
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
+                >
+                  <FaCog className="h-4 w-4 text-amber-300" />
+                  Add Gallery
+                </Link>
 
-            <Link
-              href="/contactinfo"
-              onClick={closeSidebar}
-              className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-            >
-              <FaRegUser className="h-4 w-4 text-amber-300" />
-              Contact info
-            </Link>
+                <Link
+                  href="/contactinfo"
+                  onClick={closeSidebar}
+                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
+                >
+                  <FaRegUser className="h-4 w-4 text-amber-300" />
+                  Contact info
+                </Link>
+              </>
+            )}
           </nav>
 
           <div className="flex-1" />
 
+          {/* Website Link & Logout - সাধারণ ইউজার এবং এডমিন উভয়ই দেখতে পাবে */}
           <Link
             href="/"
             onClick={closeSidebar}

@@ -1,9 +1,7 @@
-import DashboardHeader from "@/components/Dashboard/DashboardHeader";
-import DashboardSidebar from "@/components/Dashboard/Sidebar";
 import type { Metadata } from "next";
 import { ToastContainer } from "react-toastify";
-
-
+import DashboardHeader from "@/components/Dashboard/DashboardHeader";
+import DashboardSidebar from "@/components/Dashboard/Sidebar";
 
 export const metadata: Metadata = {
   title: "Dashboard | Travel",
@@ -16,25 +14,24 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40 text-slate-800">
-      
+    <div className="min-h-screen bg-slate-50/60 text-slate-800">
+      {/* Toast Notification Container */}
+      <ToastContainer position="top-right" autoClose={3000} />
+
       {/* Sidebar */}
       <DashboardSidebar />
 
-      {/* Main Content */}
-      <div className="min-h-screen lg:pl-64">
-        
-        {/* Desktop Header */}
+      {/* Main Content Area */}
+      <div className="flex min-h-screen flex-col lg:pl-64">
+        {/* Dashboard Top Header */}
         <DashboardHeader />
-        <ToastContainer />
 
-        {/* Page Content */}
-        <main className="min-h-screen pt-16 lg:pt-0">
-          <div className="p-4 sm:p-6 lg:p-8">
+        {/* Page Main Content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pt-20 lg:pt-20">
+          <div className="mx-auto max-w-7xl">
             {children}
           </div>
         </main>
-
       </div>
     </div>
   );

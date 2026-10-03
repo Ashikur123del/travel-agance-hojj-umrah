@@ -19,6 +19,10 @@ const menuData: ServiceItem[] = [
       title: "Our Owner",
       href: "/our-partners", 
     },
+      {
+      title: "Become an Agent",
+      href: "/becomeagent", 
+    },
     ],
   },
   {
