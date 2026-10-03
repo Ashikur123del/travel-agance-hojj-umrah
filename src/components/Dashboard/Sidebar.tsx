@@ -46,7 +46,7 @@ export default function DashboardSidebar() {
 
   return (
     <>
-      {/* Mobile Top Navigation Header */}
+     
       <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-100/70 bg-white/90 px-4 shadow-sm backdrop-blur-md lg:hidden">
         <button
           type="button"
