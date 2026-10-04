@@ -2,42 +2,50 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import {
-  FaBars,
-  FaTimes,
-  FaHome,
-  FaUser,
-  FaCog,
-  FaSignOutAlt,
-  FaPlane,
-  FaTachometerAlt,
-  FaRegUser,
-} from "react-icons/fa";
-import { authClient } from "@/lib/auth-client"; 
+import { FaBars, FaTimes, FaHome, FaSignOutAlt } from "react-icons/fa";
+import { authClient } from "@/lib/auth-client";
+import { NAV_ITEMS } from "@/config/navigation";
+import WithRole from "@/components/auth/WithRole";
 
 export default function DashboardSidebar() {
-  const router = useRouter();
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data: session } = authClient.useSession();
- const userRole = (session?.user as any)?.role; 
+  const user = session?.user as (typeof session & { role?: string }) | undefined;
+  const userRole = user?.role || "user";
 
-  const handleLogout = async () => {
+const handleLogout = async () => {
     try {
+      // 1. Better Auth session logout (Admin-এর জন্য)
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
-            localStorage.removeItem("isLoggedIn");
-            router.push("/login");
-            router.refresh();
+            clearSessionAndRedirect();
           },
         },
       });
     } catch (error) {
       console.error("Logout error:", error);
-      router.push("/login");
+    } finally {
+      // 2. Agent Cookie & LocalStorage Clear (User/Agent-এর জন্য)
+      clearSessionAndRedirect();
     }
+  };
+
+  const clearSessionAndRedirect = () => {
+    // Agent verified cookie ডিলিট করার নিয়ম (Past date দেওয়া)
+    document.cookie = "agent_verified=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = "better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    document.cookie = "__Secure-better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+    
+    // LocalStorage খালি করা
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("agentData");
+    localStorage.clear();
+
+    
+    window.location.href = "/login";
   };
 
   const closeSidebar = () => {
@@ -46,7 +54,7 @@ export default function DashboardSidebar() {
 
   return (
     <>
-     
+      {/* Mobile Top Header */}
       <header className="fixed left-0 right-0 top-0 z-40 flex h-16 items-center justify-between border-b border-emerald-100/70 bg-white/90 px-4 shadow-sm backdrop-blur-md lg:hidden">
         <button
           type="button"
@@ -56,10 +64,7 @@ export default function DashboardSidebar() {
           <FaBars className="h-5 w-5" />
         </button>
 
-        <Link
-          href="/dashboard"
-          className="text-lg font-bold text-teal-700"
-        >
+        <Link href="/dashboard" className="text-lg font-bold text-teal-700">
           Travel<span className="text-cyan-600">Agence</span>
         </Link>
 
@@ -72,7 +77,7 @@ export default function DashboardSidebar() {
         </button>
       </header>
 
-      {/* Overlay for mobile drawer */}
+      {/* Mobile Overlay */}
       {sidebarOpen && (
         <div
           onClick={closeSidebar}
@@ -82,18 +87,9 @@ export default function DashboardSidebar() {
 
       {/* Sidebar Container */}
       <aside
-        className={`
-          fixed left-0 top-0 z-50 flex h-screen w-72 flex-col
-          bg-gradient-to-b from-teal-900 via-teal-800 to-emerald-950
-          text-white shadow-2xl shadow-emerald-950/30
-          transition-transform duration-300
-          lg:w-64
-          ${
-            sidebarOpen
-              ? "translate-x-0"
-              : "-translate-x-full lg:translate-x-0"
-          }
-        `}
+        className={`fixed left-0 top-0 z-50 flex h-screen w-72 flex-col bg-gradient-to-b from-teal-900 via-teal-800 to-emerald-950 text-white shadow-2xl shadow-emerald-950/30 transition-transform duration-300 lg:w-64 ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
       >
         <div className="flex h-20 items-center justify-between border-b border-white/10 px-6">
           <Link
@@ -115,65 +111,35 @@ export default function DashboardSidebar() {
 
         <div className="flex flex-1 flex-col overflow-y-auto px-4 py-6">
           <p className="mb-3 px-3 text-[10px] font-bold uppercase tracking-[0.25em] text-cyan-200/70">
-            {userRole === "admin" ? "Admin Menu" : "User Dashboard"}
+            {userRole === "admin"
+              ? "Admin Menu"
+              : userRole === "agent"
+              ? "Agent Panel"
+              : "User Menu"}
           </p>
 
+          {/* Dynamic Navigation Links using WithRole */}
           <nav className="space-y-2">
-            {/* Dashboard Link - সবাই দেখতে পাবে */}
-            <Link
-              href="/dashboard"
-              onClick={closeSidebar}
-              className="group flex items-center gap-3 rounded-xl bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
-            >
-              <FaTachometerAlt className="h-4 w-4 text-amber-300" />
-              Dashboard
-            </Link>
-
-            {/* কেবল Admin ইউজাররা নিচের মেনুগুলো দেখতে পাবে */}
-            {userRole === "admin" && (
-              <>
-                <Link
-                  href="/heroslider"
-                  onClick={closeSidebar}
-                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-                >
-                  <FaUser className="h-4 w-4 text-emerald-300" />
-                  Hero Slider Add
-                </Link>
-
-                <Link
-                  href="/addnews"
-                  onClick={closeSidebar}
-                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-                >
-                  <FaPlane className="h-4 w-4 text-cyan-300" />
-                  Add a News
-                </Link>
-
-                <Link
-                  href="/addgallery"
-                  onClick={closeSidebar}
-                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-                >
-                  <FaCog className="h-4 w-4 text-amber-300" />
-                  Add Gallery
-                </Link>
-
-                <Link
-                  href="/contactinfo"
-                  onClick={closeSidebar}
-                  className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium text-teal-100 transition hover:bg-emerald-500/10 hover:text-white"
-                >
-                  <FaRegUser className="h-4 w-4 text-amber-300" />
-                  Contact info
-                </Link>
-              </>
-            )}
+            {NAV_ITEMS.map((item) => {
+              const Icon = item.icon;
+              return (
+                <WithRole key={item.href} roles={item.allowedRoles}>
+                  <Link
+                    href={item.href}
+                    onClick={closeSidebar}
+                    className="group flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-semibold text-teal-100 transition hover:bg-white/10 hover:text-white"
+                  >
+                    <Icon className="h-4 w-4 text-cyan-300" />
+                    {item.label}
+                  </Link>
+                </WithRole>
+              );
+            })}
           </nav>
 
           <div className="flex-1" />
 
-          {/* Website Link & Logout - সাধারণ ইউজার এবং এডমিন উভয়ই দেখতে পাবে */}
+          {/* Website Link & Logout */}
           <Link
             href="/"
             onClick={closeSidebar}

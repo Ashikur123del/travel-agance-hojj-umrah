@@ -5,6 +5,8 @@ export interface Agent {
     fathersName: string;
     mobileNo: string;
     bkashNumber: string;
+    whatsAppNumber: string,
+    bankAccountNumber: string
     presentAddress: string;
     permanentAddress: string;
     emergencyName: string;
@@ -14,6 +16,7 @@ export interface Agent {
     photo?: string | null;
     createdAt: string;
     updatedAt: string;
+    userId: string,
 }
 
 // নতুন Agent তৈরি করার জন্য (Create Payload)
@@ -21,7 +24,9 @@ export interface CreateAgentInput {
     name: string;
     fathersName: string;
     mobileNo: string;
-    bkashNumber: string;
+    whatsAppNumber?: string;
+    bkashNumber?: string;
+    bankAccountNumber?: string;
     presentAddress: string;
     permanentAddress: string;
     emergencyName: string;
@@ -30,7 +35,6 @@ export interface CreateAgentInput {
     emergencyAddress: string;
     photo?: File | null;
 }
-
 // Agent আপডেট করার জন্য (Update Payload - Partial)
 export interface UpdateAgentInput extends Partial<Omit<CreateAgentInput, "photo">> {
     photo?: File | string | null;

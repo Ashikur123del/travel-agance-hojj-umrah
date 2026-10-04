@@ -11,6 +11,8 @@ import {
   FaWallet,
   FaCamera,
   FaPaperPlane,
+  FaWhatsapp,
+  FaBuilding,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { createAgent } from "@/lib/serviceapi/agent/api";
@@ -18,11 +20,18 @@ import { createAgent } from "@/lib/serviceapi/agent/api";
 const BecomeAgent: React.FC = () => {
   const router = useRouter();
 
+  // ⚙️ এটি True বা False করবেন:
+  // true  -> Bkash ও Bank Account ফিল্ড ২টি দেখাবে
+  // false -> Bkash ও Bank Account ফিল্ড ২টি লুকানো থাকবে
+  const [showBankAndBkash, setShowBankAndBkash] = useState<boolean>(true);
+
   const initialFormState = {
     name: "",
     fathersName: "",
     mobileNo: "",
+    whatsAppNumber: "",
     bkashNumber: "",
+    bankAccountNumber: "",
     presentAddress: "",
     permanentAddress: "",
     emergencyName: "",
@@ -54,24 +63,28 @@ const BecomeAgent: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
+    // showBankAndBkash false থাকলে Bkash ও Bank Account ফিল্ড খালি সাবমিট হবে
+    const payload = {
+      ...formData,
+      bkashNumber: showBankAndBkash ? formData.bkashNumber : "",
+      bankAccountNumber: showBankAndBkash ? formData.bankAccountNumber : "",
+    };
+
     try {
       const res = await createAgent({
-        ...formData,
+        ...payload,
         photo: photoFile,
       });
 
       toast.success(res?.message || "Agent application submitted successfully!");
 
-      // Form reset
       setFormData(initialFormState);
       setPhotoFile(null);
       setPhotoPreview(null);
 
-      // Registration submit hole Login page-e redirect
       setTimeout(() => {
         router.push("/login");
       }, 1500);
-
     } catch (error: any) {
       toast.error(error?.message || "Failed to submit registration");
     } finally {
@@ -150,7 +163,7 @@ const BecomeAgent: React.FC = () => {
               />
             </div>
 
-            {/* Mobile No & Bkash Number */}
+            {/* Mobile No & WhatsApp Number */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div>
                 <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
@@ -167,21 +180,57 @@ const BecomeAgent: React.FC = () => {
                 />
               </div>
 
+              {/* WhatsApp Number (সর্বদা থাকবে) */}
               <div>
                 <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
-                  <FaWallet className="text-amber-600" /> Bkash Number
+                  <FaWhatsapp className="text-emerald-600 text-sm" /> WhatsApp Number
                 </label>
                 <input
                   type="tel"
-                  name="bkashNumber"
-                  value={formData.bkashNumber}
+                  name="whatsAppNumber"
+                  value={formData.whatsAppNumber}
                   onChange={handleChange}
-                  placeholder="Bkash number"
+                  placeholder="WhatsApp number"
                   required
                   className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-all focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-200"
                 />
               </div>
             </div>
+
+            {/* Bkash Number & Bank Account Number (showBankAndBkash = true হলেই শুধু দেখাবে) */}
+            {showBankAndBkash && (
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div>
+                  <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+                    <FaWallet className="text-amber-600" /> Bkash Number
+                  </label>
+                  <input
+                    type="tel"
+                    name="bkashNumber"
+                    value={formData.bkashNumber}
+                    onChange={handleChange}
+                    placeholder="Bkash number"
+                    required={showBankAndBkash}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-all focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-200"
+                  />
+                </div>
+
+                <div>
+                  <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+                    <FaBuilding className="text-emerald-600" /> Bank Account Number
+                  </label>
+                  <input
+                    type="text"
+                    name="bankAccountNumber"
+                    value={formData.bankAccountNumber}
+                    onChange={handleChange}
+                    placeholder="Enter bank account no"
+                    required={showBankAndBkash}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-all focus:border-emerald-500 focus:bg-white focus:ring-2 focus:ring-emerald-200"
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Photo Upload Section */}

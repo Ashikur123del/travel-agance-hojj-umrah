@@ -37,40 +37,35 @@ export async function getAgentById(id: string): Promise<Agent> {
     return response.json();
 }
 
-/**
- * 🔽 ৩. নাম ও মোবাইল নম্বর দিয়ে এজেন্ট ভেরিফাই করার জন্য (NEW)
- */
-export async function verifyAgent(
-    name: string,
-    mobileNo: string
-): Promise<{ message: string; agent: Agent }> {
-    const response = await fetch(`${API_BASE_URL}/api/agents/verify`, {
+
+export const verifyAgent = async (mobileNo: string, password?: string) => {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/agents/verify`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
         },
-        body: JSON.stringify({ name, mobileNo }),
+        body: JSON.stringify({ mobileNo, password }),
     });
 
-    const resData = await response.json();
-
-    if (!response.ok) {
-        throw new Error(resData.error || resData.message || "Verification failed");
+    if (!res.ok) {
+        let errorMessage = "Failed to verify agent";
+        try {
+            const err = await res.json();
+            errorMessage = err.error || errorMessage;
+        } catch (e) {
+            errorMessage = `Server Error (${res.status}): Route not found`;
+        }
+        throw new Error(errorMessage);
     }
 
-    return resData;
-}
-
-/**
- * ৪. নতুন এজেন্ট তৈরি করার জন্য (POST)
- */
+    return await res.json();
+};
 export async function createAgent(data: CreateAgentInput): Promise<{ message: string; newAgent: Agent }> {
     const formData = new FormData();
 
     formData.append("name", data.name);
     formData.append("fathersName", data.fathersName);
     formData.append("mobileNo", data.mobileNo);
-    formData.append("bkashNumber", data.bkashNumber);
     formData.append("presentAddress", data.presentAddress);
     formData.append("permanentAddress", data.permanentAddress);
     formData.append("emergencyName", data.emergencyName);
@@ -78,6 +73,22 @@ export async function createAgent(data: CreateAgentInput): Promise<{ message: st
     formData.append("emergencyMobile", data.emergencyMobile);
     formData.append("emergencyAddress", data.emergencyAddress);
 
+    // 🟢 WhatsApp Number
+    if (data.whatsAppNumber) {
+        formData.append("whatsAppNumber", data.whatsAppNumber);
+    }
+
+    // 🟢 Bkash Number
+    if (data.bkashNumber) {
+        formData.append("bkashNumber", data.bkashNumber);
+    }
+
+    // 🟢 Bank Account Number
+    if (data.bankAccountNumber) {
+        formData.append("bankAccountNumber", data.bankAccountNumber);
+    }
+
+    // 📸 Photo File
     if (data.photo) {
         formData.append("photo", data.photo);
     }
@@ -90,12 +101,11 @@ export async function createAgent(data: CreateAgentInput): Promise<{ message: st
     const resData = await response.json();
 
     if (!response.ok) {
-        throw new Error(resData.error || "Failed to create agent");
+        throw new Error(resData.error || resData.message || "Failed to create agent");
     }
 
     return resData;
 }
-
 /**
  * ৫. এজেন্টের ডাটা আপডেট করার জন্য (PATCH)
  */

@@ -3,7 +3,14 @@
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { FaPhoneAlt, FaEnvelope, FaLock, FaArrowRight, FaUserShield, FaUserCheck } from "react-icons/fa";
+import {
+  FaPhoneAlt,
+  FaEnvelope,
+  FaLock,
+  FaArrowRight,
+  FaUserShield,
+  FaUserCheck,
+} from "react-icons/fa";
 import { handleSignIn } from "@/lib/auth-service";
 import { verifyAgent } from "@/lib/serviceapi/agent/api";
 import H1 from "@/assets/H-1.avif";
@@ -12,12 +19,12 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Login Type: "user" (Mobile Only) or "admin" (Email & Password)
   const [loginType, setLoginType] = useState<"user" | "admin">("user");
 
-  // User Login Fields
+  // User / Agent Login Fields
   const [mobileNo, setMobileNo] = useState("");
-  const [userName, setUserName] = useState("");
+  const [userPassword, setUserPassword] = useState("");
+  const [showUserPassword, setShowUserPassword] = useState(false);
 
   // Admin Login Fields
   const [email, setEmail] = useState("");
@@ -32,30 +39,29 @@ function LoginForm() {
     setError("");
     setLoading(true);
 
+    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+
     try {
       if (loginType === "user") {
-        // User Verification via Mobile & Name using agent service
-        const data = await verifyAgent(userName, mobileNo);
+        // Agent Verification via Mobile
+        const data = await verifyAgent(mobileNo, userPassword);
 
         if (data.agent) {
-          // 1. Agent data localStorage-এ সেভ করা
           localStorage.setItem("agentData", JSON.stringify(data.agent));
-
-          // 2. Proxy / Middleware bypass করার জন্য Cookie সেট করা (৭ দিনের মেয়াদ)
           document.cookie = "agent_verified=true; path=/; max-age=604800";
-        }
 
-        const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-        router.push(callbackUrl);
-        router.refresh();
+          // 🟢 Hard navigation ensures proxy.ts reads updated cookies instantly
+          window.location.href = callbackUrl;
+        } else {
+          setError(data?.message || "Agent verification failed.");
+        }
       } else {
-        // Admin Login via Email & Password
+        // Admin Login
         await handleSignIn(
           { email, password },
           () => {
-            const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
-            router.push(callbackUrl);
-            router.refresh();
+            // 🟢 Hard navigation to flush client cache and evaluate proxy.ts
+            window.location.href = callbackUrl;
           },
           (errMsg) => {
             setError(errMsg);
@@ -64,9 +70,10 @@ function LoginForm() {
       }
     } catch (err: any) {
       console.error("Login verification error:", err);
-      setError(err?.message || "Login failed. Please check your network or inputs.");
+      setError(
+        err?.message || "Login failed. Please check your network or inputs."
+      );
     } finally {
-      // 3. Success বা Error যাই হোক, বাটন আনলক করার জন্য Loading বন্ধ করা
       setLoading(false);
     }
   };
@@ -83,23 +90,28 @@ function LoginForm() {
 
         <div className="flex items-center justify-center px-6 py-12 sm:px-10">
           <div className="w-full max-w-md">
-            
             {/* Login Type Switcher */}
             <div className="mb-6 flex rounded-2xl bg-slate-100 p-1.5 shadow-inner">
               <button
                 type="button"
-                onClick={() => { setLoginType("user"); setError(""); }}
+                onClick={() => {
+                  setLoginType("user");
+                  setError("");
+                }}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
                   loginType === "user"
                     ? "bg-white text-emerald-700 shadow-sm"
                     : "text-slate-500 hover:text-slate-800"
                 }`}
               >
-                <FaUserCheck className="text-emerald-600" /> User / Agent Mobile
+                <FaUserCheck className="text-emerald-600" /> User / Agent
               </button>
               <button
                 type="button"
-                onClick={() => { setLoginType("admin"); setError(""); }}
+                onClick={() => {
+                  setLoginType("admin");
+                  setError("");
+                }}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
                   loginType === "admin"
                     ? "bg-white text-amber-700 shadow-sm"
@@ -116,7 +128,7 @@ function LoginForm() {
               </h2>
               <p className="mt-2 text-xs text-slate-600 sm:text-sm">
                 {loginType === "user"
-                  ? "Enter your registered name and mobile number to enter dashboard."
+                  ? "Enter your registered mobile number and password to enter dashboard."
                   : "Enter your admin email and password to access panel."}
               </p>
             </div>
@@ -128,25 +140,9 @@ function LoginForm() {
             )}
 
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* USER LOGIN FIELDS (Name & Mobile Number) */}
               {loginType === "user" ? (
                 <>
-                  <div>
-                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
-                      Full Name
-                    </label>
-                    <div className="relative">
-                      <input
-                        type="text"
-                        value={userName}
-                        onChange={(e) => setUserName(e.target.value)}
-                        placeholder="Enter registered name"
-                        required
-                        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-4 pr-4 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
-                      />
-                    </div>
-                  </div>
-
+                  {/* MOBILE NUMBER FIELD */}
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
                       Mobile Number
@@ -163,9 +159,34 @@ function LoginForm() {
                       />
                     </div>
                   </div>
+
+                  {/* USER / AGENT PASSWORD FIELD */}
+                  <div>
+                    <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
+                      Password
+                    </label>
+                    <div className="relative">
+                      <FaLock className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
+                      <input
+                        type={showUserPassword ? "text" : "password"}
+                        value={userPassword}
+                        onChange={(e) => setUserPassword(e.target.value)}
+                        placeholder="Enter password"
+                        required
+                        className="w-full rounded-xl border border-slate-200 bg-white py-3 pl-11 pr-20 text-sm outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-200"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowUserPassword(!showUserPassword)}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-emerald-600"
+                      >
+                        {showUserPassword ? "Hide" : "Show"}
+                      </button>
+                    </div>
+                  </div>
                 </>
               ) : (
-                /* ADMIN LOGIN FIELDS (Email & Password) */
+                /* ADMIN LOGIN FIELDS */
                 <>
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
