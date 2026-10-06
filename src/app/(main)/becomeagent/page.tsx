@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -13,47 +13,63 @@ import {
   FaPaperPlane,
   FaWhatsapp,
   FaBuilding,
+  FaEnvelope,
+  FaLock,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { createAgent } from "@/lib/serviceapi/agent/api";
 
+const initialFormState = {
+  name: "",
+  fathersName: "",
+  mobileNo: "",
+  whatsAppNumber: "",
+  bkashNumber: "",
+  bankAccountNumber: "",
+  presentAddress: "",
+  permanentAddress: "",
+  emergencyName: "",
+  emergencyRelation: "",
+  emergencyMobile: "",
+  emergencyAddress: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
+
 const BecomeAgent: React.FC = () => {
   const router = useRouter();
 
-  // ⚙️ এটি True বা False করবেন:
-  // true  -> Bkash ও Bank Account ফিল্ড ২টি দেখাবে
-  // false -> Bkash ও Bank Account ফিল্ড ২টি লুকানো থাকবে
   const [showBankAndBkash, setShowBankAndBkash] = useState<boolean>(true);
-
-  const initialFormState = {
-    name: "",
-    fathersName: "",
-    mobileNo: "",
-    whatsAppNumber: "",
-    bkashNumber: "",
-    bankAccountNumber: "",
-    presentAddress: "",
-    permanentAddress: "",
-    emergencyName: "",
-    emergencyRelation: "",
-    emergencyMobile: "",
-    emergencyAddress: "",
-  };
-
   const [formData, setFormData] = useState(initialFormState);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
+  // Clean up object URL to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
+      }
       setPhotoFile(file);
       setPhotoPreview(URL.createObjectURL(file));
     }
@@ -63,7 +79,12 @@ const BecomeAgent: React.FC = () => {
     e.preventDefault();
     setLoading(true);
 
-    // showBankAndBkash false থাকলে Bkash ও Bank Account ফিল্ড খালি সাবমিট হবে
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Password match kore nai");
+      setLoading(false);
+      return;
+    }
+
     const payload = {
       ...formData,
       bkashNumber: showBankAndBkash ? formData.bkashNumber : "",
@@ -79,14 +100,17 @@ const BecomeAgent: React.FC = () => {
       toast.success(res?.message || "Agent application submitted successfully!");
 
       setFormData(initialFormState);
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
       setPhotoFile(null);
       setPhotoPreview(null);
 
       setTimeout(() => {
         router.push("/login");
       }, 1500);
-    } catch (error: any) {
-      toast.error(error?.message || "Failed to submit registration");
+    } catch (error: unknown) {
+      const errMessage =
+        error instanceof Error ? error.message : "Failed to submit registration";
+      toast.error(errMessage);
     } finally {
       setLoading(false);
     }
@@ -150,7 +174,7 @@ const BecomeAgent: React.FC = () => {
             {/* Father's Name */}
             <div>
               <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
-                <FaUserTie className="text-emerald-600" /> Fathers Name
+                <FaUserTie className="text-emerald-600" /> Father's Name
               </label>
               <input
                 type="text"
@@ -180,7 +204,6 @@ const BecomeAgent: React.FC = () => {
                 />
               </div>
 
-              {/* WhatsApp Number (সর্বদা থাকবে) */}
               <div>
                 <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
                   <FaWhatsapp className="text-emerald-600 text-sm" /> WhatsApp Number
@@ -197,7 +220,21 @@ const BecomeAgent: React.FC = () => {
               </div>
             </div>
 
-            {/* Bkash Number & Bank Account Number (showBankAndBkash = true হলেই শুধু দেখাবে) */}
+            {/* Option to toggle Bank & Bkash details */}
+            <div className="flex items-center gap-2 pt-2">
+              <input
+                type="checkbox"
+                id="showBankAndBkash"
+                checked={showBankAndBkash}
+                onChange={(e) => setShowBankAndBkash(e.target.checked)}
+                className="h-4 w-4 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+              />
+              <label htmlFor="showBankAndBkash" className="text-xs font-semibold text-slate-600">
+                Include Payment / Bank Details
+              </label>
+            </div>
+
+            {/* Bkash Number & Bank Account Number */}
             {showBankAndBkash && (
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
@@ -260,6 +297,64 @@ const BecomeAgent: React.FC = () => {
                 className="hidden"
               />
             </label>
+          </div>
+        </div>
+
+        {/* ACCOUNT CREDENTIALS */}
+        <div className="mt-6 rounded-2xl border border-amber-200 bg-amber-50/40 p-5 sm:p-6">
+          <h3 className="mb-4 text-xs font-extrabold uppercase tracking-wider text-amber-800 sm:text-sm">
+            Account Credentials
+          </h3>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div>
+              <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+                <FaEnvelope className="text-amber-600" /> Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="agent@example.com"
+                required
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-800 outline-none transition-all focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-200"
+              />
+            </div>
+            <div>
+              <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+                <FaLock className="text-amber-600" /> Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Min 6 characters"
+                  required
+                  minLength={6}
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pr-16 text-sm text-slate-800 outline-none transition-all focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-200"
+                />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-amber-600">{showPassword ? "Hide" : "Show"}</button>
+              </div>
+            </div>
+            <div>
+              <label className="mb-1.5 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-slate-700">
+                <FaLock className="text-amber-600" /> Confirm Password
+              </label>
+              <div className="relative">
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
+                  placeholder="Repeat password"
+                  required
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 pr-16 text-sm text-slate-800 outline-none transition-all focus:border-amber-500 focus:bg-white focus:ring-2 focus:ring-amber-200"
+                />
+                <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-xs font-semibold text-amber-600">{showConfirmPassword ? "Hide" : "Show"}</button>
+              </div>
+            </div>
           </div>
         </div>
 

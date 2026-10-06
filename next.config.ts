@@ -21,9 +21,8 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        source: "/api/auth/:path*",
-        destination:
-          "https://travel-agence-server.vercel.app/api/auth/:path*",
+        source: "/api/:path*",
+        destination: "https://travel-agence-server.vercel.app/api/:path*",
       },
     ];
   },

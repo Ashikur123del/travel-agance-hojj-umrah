@@ -1,23 +1,58 @@
+
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { FaSignOutAlt } from "react-icons/fa";
 import { authClient } from "@/lib/auth-client";
 
 export default function DashboardHeader() {
-  const router = useRouter();
+  const { data: session, isPending } = authClient.useSession();
+
+  const user = session?.user as { role?: string } | undefined;
+
+  const userRole = user?.role || "user";
 
   const handleLogout = async () => {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          router.push("/login");
-          router.refresh();
-        },
-      },
-    });
+    try {
+      await authClient.signOut();
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      // Agent cookie clear
+      document.cookie =
+        "agent_verified=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      // Better Auth cookies clear
+      document.cookie =
+        "better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      document.cookie =
+        "__Secure-better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+
+      // Local storage clear
+      localStorage.removeItem("agentData");
+      localStorage.clear();
+
+      // Login page
+      window.location.href = "/login";
+    }
   };
+
+  if (isPending) {
+    return (
+      <header className="sticky top-0 z-30 hidden h-16 items-center border-b border-emerald-100/70 bg-white/90 px-6 shadow-sm backdrop-blur-md lg:flex">
+        <p className="text-sm font-semibold text-slate-500">
+          Loading...
+        </p>
+      </header>
+    );
+  }
+
+  const dashboardTitle =
+    userRole === "admin"
+      ? "Admin Dashboard"
+      : userRole === "agent"
+        ? "Agent Dashboard"
+        : "User Dashboard";
 
   return (
     <header className="sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-emerald-100/70 bg-white/90 px-6 shadow-sm backdrop-blur-md lg:flex">
@@ -27,7 +62,7 @@ export default function DashboardHeader() {
         </p>
 
         <h1 className="text-lg font-bold text-slate-800">
-          Admin Dashboard
+          {dashboardTitle}
         </h1>
       </div>
 
@@ -42,3 +77,4 @@ export default function DashboardHeader() {
     </header>
   );
 }
+

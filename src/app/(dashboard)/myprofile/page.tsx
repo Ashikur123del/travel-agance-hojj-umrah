@@ -3,10 +3,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import Image from "next/image";
 import { Agent, UpdateAgentInput } from "@/types/agent.type";
-import { updateAgent, deleteAgent, getAgentById } from "@/lib/serviceapi/agent/api";
+import { getMyAgentProfile, updateMyAgentProfile } from "@/lib/serviceapi/agent/api";
 import {
   FaUser, FaPhone, FaWhatsapp, FaMoneyBillWave, FaUniversity, FaMapMarkerAlt,
-  FaEdit, FaTrash, FaTimes, FaExclamationTriangle, FaCopy, FaCheck, FaCamera,
+  FaEdit, FaTimes, FaCopy, FaCheck, FaCamera,
   FaCheckCircle, FaHome, FaLifeRing,
 } from "react-icons/fa";
 
@@ -16,14 +16,24 @@ interface MyProfileProps {
 
 type ToastState = { text: string; type: "success" | "error" } | null;
 
-// Edit form fields, grouped into sections (no more copy-pasted inputs)
+const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000";
+
+// Cloudinary URL, naki purono local path (public\uploads\x.jpg) - dui-i handle kore
+function resolvePhoto(photo?: string | null): string | null {
+  if (!photo) return null;
+  if (photo.startsWith("http://") || photo.startsWith("https://")) return photo;
+  const clean = photo.replace(/\\/g, "/").replace(/^\/+/, "").replace(/^public\//, "");
+  return `${API_URL}/${clean}`;
+}
+
+// Edit form fields, grouped into sections
 const FORM_SECTIONS: { title: string; fields: { name: keyof UpdateAgentInput; label: string }[] }[] = [
   {
     title: "Personal",
     fields: [
       { name: "name", label: "Name" },
       { name: "fathersName", label: "Father's Name" },
-      { name: "mobileNo", label: "Mobile No" },
+      { name: "mobileNo", label: "Mobile No (login number)" },
       { name: "whatsAppNumber", label: "WhatsApp" },
     ],
   },
@@ -51,6 +61,8 @@ const FORM_SECTIONS: { title: string; fields: { name: keyof UpdateAgentInput; la
     ],
   },
 ];
+
+const DIGIT_ONLY_FIELDS = ["mobileNo", "whatsAppNumber", "bkashNumber", "emergencyMobile"];
 
 const COMPLETENESS_KEYS = [
   "photo", "fathersName", "mobileNo", "whatsAppNumber", "bkashNumber", "bankAccountNumber",
@@ -122,11 +134,10 @@ const Card = ({ title, icon, children }: { title: string; icon: React.ReactNode;
   </section>
 );
 
-// Page background: soft tinted base + dot grid + two blurred colour glows
+// Page background: soft tinted base + dot grid + blurred colour glows
 const PageBackground = ({ children }: { children: React.ReactNode }) => (
   <div className="relative min-h-screen overflow-hidden bg-[#F2F6F4]">
     <div aria-hidden className="pointer-events-none absolute inset-0">
-      {/* dot grid, fades out toward the bottom */}
       <div
         className="absolute inset-0 opacity-60"
         style={{
@@ -136,7 +147,6 @@ const PageBackground = ({ children }: { children: React.ReactNode }) => (
           WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 40%, transparent 100%)",
         }}
       />
-      {/* glows */}
       <div className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-emerald-300/30 blur-3xl" />
       <div className="absolute -right-24 top-40 h-80 w-80 rounded-full bg-teal-300/25 blur-3xl" />
       <div className="absolute -bottom-32 left-1/3 h-80 w-80 rounded-full bg-sky-200/30 blur-3xl" />
@@ -162,9 +172,9 @@ const Skeleton = () => (
 const MyProfile = ({ initialData }: MyProfileProps) => {
   const [agent, setAgent] = useState<Agent | null>(initialData || null);
   const [dataLoading, setDataLoading] = useState<boolean>(!initialData);
+  const [loadError, setLoadError] = useState<string | null>(null);
 
   const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
   const [editFormData, setEditFormData] = useState<UpdateAgentInput>({});
@@ -183,50 +193,49 @@ const MyProfile = ({ initialData }: MyProfileProps) => {
     return () => clearTimeout(t);
   }, [toast]);
 
-  // Load agent (localStorage -> fresh API data)
+  // Server theke nijer profile load (session cookie diye)
   useEffect(() => {
     if (initialData) return;
-    const load = async () => {
+    let cancelled = false;
+
+    (async () => {
       try {
-        const stored = localStorage.getItem("agentData");
-        if (stored) {
-          const parsed = JSON.parse(stored);
-          if (parsed?.id) {
-            try {
-              setAgent(await getAgentById(parsed.id));
-            } catch {
-              setAgent(parsed);
-            }
-          } else {
-            setAgent(parsed);
-          }
-        }
+        const me = await getMyAgentProfile();
+        if (cancelled) return;
+        setAgent(me);
+        try {
+          localStorage.setItem("agentData", JSON.stringify(me));
+        } catch {}
       } catch (error) {
-        console.error("Failed to load agent profile:", error);
+        if (!cancelled) {
+          setLoadError(error instanceof Error ? error.message : "Failed to load profile");
+        }
       } finally {
-        setDataLoading(false);
+        if (!cancelled) setDataLoading(false);
       }
+    })();
+
+    return () => {
+      cancelled = true;
     };
-    load();
   }, [initialData]);
 
-  // Populate form only when the edit modal opens (so typing is never overwritten)
+  // Populate form only when the edit modal opens
   useEffect(() => {
     if (isEditOpen && agent) {
       setEditFormData({ ...agent });
       setSelectedPhoto(null);
       setPhotoPreview(null);
     }
-  }, [isEditOpen, agent]);
+    // agent bad dewa hoyeche jeno typing er shomoy form reset na hoy
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEditOpen]);
 
-  // Esc to close + lock page scroll while a modal is open
+  // Esc to close + lock page scroll while modal is open
   useEffect(() => {
-    if (!isEditOpen && !isDeleteOpen) return;
+    if (!isEditOpen) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && !loading) {
-        setIsEditOpen(false);
-        setIsDeleteOpen(false);
-      }
+      if (e.key === "Escape" && !loading) setIsEditOpen(false);
     };
     document.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
@@ -235,7 +244,7 @@ const MyProfile = ({ initialData }: MyProfileProps) => {
       document.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
     };
-  }, [isEditOpen, isDeleteOpen, loading]);
+  }, [isEditOpen, loading]);
 
   // Free object URL
   useEffect(() => () => { if (photoPreview) URL.revokeObjectURL(photoPreview); }, [photoPreview]);
@@ -257,7 +266,15 @@ const MyProfile = ({ initialData }: MyProfileProps) => {
               <FaUser />
             </span>
             <p className="font-semibold text-slate-800">কোনো এজেন্ট প্রোফাইল পাওয়া যায়নি।</p>
-            <p className="mt-1 text-sm text-slate-500">Log in again to load your profile.</p>
+            <p className="mt-1 text-sm text-slate-500">
+              {loadError || "Log in again to load your profile."}
+            </p>
+            <a
+              href="/login"
+              className="mt-5 inline-block rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-800"
+            >
+              Go to login
+            </a>
           </div>
         </div>
       </PageBackground>
@@ -265,13 +282,25 @@ const MyProfile = ({ initialData }: MyProfileProps) => {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
+    const { name } = e.target;
+    const value = DIGIT_ONLY_FIELDS.includes(name)
+      ? e.target.value.replace(/\D/g, "")
+      : e.target.value;
     setEditFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
     if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      showToast("Shudhu chobi upload kora jabe", "error");
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      showToast("Chobir size 2MB er kom hote hobe", "error");
+      return;
+    }
     setSelectedPhoto(file);
     setPhotoPreview(URL.createObjectURL(file));
   };
@@ -284,29 +313,16 @@ const MyProfile = ({ initialData }: MyProfileProps) => {
         ...editFormData,
         ...(selectedPhoto && { photo: selectedPhoto }),
       };
-      const response = await updateAgent(agent.id, payload);
-      const updated = response.updatedAgent || { ...agent, ...editFormData };
+      const response = await updateMyAgentProfile(payload);
+      const updated = response.updatedAgent;
       setAgent(updated);
-      localStorage.setItem("agentData", JSON.stringify(updated));
+      try {
+        localStorage.setItem("agentData", JSON.stringify(updated));
+      } catch {}
       setIsEditOpen(false);
-      showToast(response.message || "এজেন্ট তথ্য সফলভাবে আপডেট হয়েছে!");
-    } catch (error: any) {
-      showToast(error.message || "আপডেট করতে ব্যর্থ হয়েছে", "error");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleDelete = async () => {
-    setLoading(true);
-    try {
-      const response = await deleteAgent(agent.id);
-      localStorage.removeItem("agentData");
-      setIsDeleteOpen(false);
-      setAgent(null);
-      showToast(response.message || "এজেন্ট তথ্য ডিলিট করা হয়েছে!");
-    } catch (error: any) {
-      showToast(error.message || "ডিলিট করতে সমস্যা হয়েছে", "error");
+      showToast(response.message || "প্রোফাইল সফলভাবে আপডেট হয়েছে!");
+    } catch (error) {
+      showToast(error instanceof Error ? error.message : "আপডেট করতে ব্যর্থ হয়েছে", "error");
     } finally {
       setLoading(false);
     }
@@ -314,204 +330,180 @@ const MyProfile = ({ initialData }: MyProfileProps) => {
 
   const copied = () => showToast("Copied");
   const waNumber = agent.whatsAppNumber?.replace(/\D/g, "");
+  const agentPhoto = resolvePhoto(agent.photo);
 
   return (
     <PageBackground>
-    <div className="mx-auto max-w-4xl space-y-4 px-4 py-6 sm:py-10">
-      {/* ===== Profile header ===== */}
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-        <div className="h-24 bg-gradient-to-r from-emerald-800 to-teal-600 sm:h-28" />
-        <div className="px-5 pb-6 sm:px-6">
-          <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-            <div className="flex items-end gap-4">
-              <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md">
-                {agent.photo ? (
-                  <Image src={agent.photo} alt={agent.name} fill unoptimized className="object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-3xl text-slate-400">
-                    <FaUser />
-                  </div>
-                )}
+      <div className="mx-auto max-w-4xl space-y-4 px-4 py-6 sm:py-10">
+        {/* ===== Profile header ===== */}
+        <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+          <div className="h-24 bg-gradient-to-r from-emerald-800 to-teal-600 sm:h-28" />
+          <div className="px-5 pb-6 sm:px-6">
+            <div className="-mt-12 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+              <div className="flex items-end gap-4">
+                <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-full border-4 border-white bg-slate-100 shadow-md">
+                  {agentPhoto ? (
+                    <Image src={agentPhoto} alt={agent.name} fill sizes="96px" unoptimized className="object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-3xl text-slate-400">
+                      <FaUser />
+                    </div>
+                  )}
+                </div>
+                <div className="pb-1">
+                  <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">{agent.name}</h1>
+                  <p className="text-sm text-slate-500">Father: {agent.fathersName || "Not added"}</p>
+                </div>
               </div>
-              <div className="pb-1">
-                <h1 className="text-xl font-bold text-slate-900 sm:text-2xl">{agent.name}</h1>
-                <p className="text-sm text-slate-500">Father: {agent.fathersName || "Not added"}</p>
+
+              {/* Agent shudhu edit korte pare, delete button nai */}
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setIsEditOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
+                >
+                  <FaEdit /> Edit profile
+                </button>
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <button
-                onClick={() => setIsEditOpen(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-emerald-800 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-700"
-              >
-                <FaEdit /> Edit profile
-              </button>
-              <button
-                onClick={() => setIsDeleteOpen(true)}
-                aria-label="Delete profile"
-                className="inline-flex items-center gap-2 rounded-lg border border-red-200 px-3.5 py-2.5 text-sm font-medium text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-red-600"
-              >
-                <FaTrash />
-                <span className="hidden sm:inline">Delete</span>
-              </button>
+            {/* Profile completeness */}
+            <div className="mt-5 rounded-xl bg-slate-50 p-4">
+              <div className="mb-2 flex items-center justify-between text-sm">
+                <span className="flex items-center gap-2 font-medium text-slate-700">
+                  {completeness === 100 && <FaCheckCircle className="text-emerald-600" />}
+                  {completeness === 100 ? "Profile complete" : "Profile completeness"}
+                </span>
+                <span className="font-semibold text-slate-900">{completeness}%</span>
+              </div>
+              <div className="h-2 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow={completeness} aria-valuemin={0} aria-valuemax={100}>
+                <div className="h-full rounded-full bg-emerald-600 transition-all duration-500" style={{ width: `${completeness}%` }} />
+              </div>
+              {completeness < 100 && (
+                <p className="mt-2 text-xs text-slate-500">Edit your profile to add the missing details.</p>
+              )}
             </div>
           </div>
+        </section>
 
-          {/* Profile completeness */}
-          <div className="mt-5 rounded-xl bg-slate-50 p-4">
-            <div className="mb-2 flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2 font-medium text-slate-700">
-                {completeness === 100 && <FaCheckCircle className="text-emerald-600" />}
-                {completeness === 100 ? "Profile complete" : "Profile completeness"}
-              </span>
-              <span className="font-semibold text-slate-900">{completeness}%</span>
-            </div>
-            <div className="h-2 overflow-hidden rounded-full bg-slate-200" role="progressbar" aria-valuenow={completeness} aria-valuemin={0} aria-valuemax={100}>
-              <div className="h-full rounded-full bg-emerald-600 transition-all duration-500" style={{ width: `${completeness}%` }} />
-            </div>
-            {completeness < 100 && (
-              <p className="mt-2 text-xs text-slate-500">Edit your profile to add the missing details.</p>
-            )}
+        {/* ===== Details ===== */}
+        <div className="grid gap-4 md:grid-cols-2">
+          <Card title="Contact & payment" icon={<FaPhone />}>
+            <InfoRow icon={<FaPhone />} iconBg="bg-blue-50 text-blue-600" label="Mobile" value={agent.mobileNo} href={agent.mobileNo ? `tel:${agent.mobileNo}` : undefined} onCopied={copied} />
+            <InfoRow icon={<FaWhatsapp />} iconBg="bg-green-50 text-green-600" label="WhatsApp" value={agent.whatsAppNumber} href={waNumber ? `https://wa.me/${waNumber}` : undefined} onCopied={copied} />
+            <InfoRow icon={<FaMoneyBillWave />} iconBg="bg-pink-50 text-pink-600" label="bKash" value={agent.bkashNumber} onCopied={copied} />
+            <InfoRow icon={<FaUniversity />} iconBg="bg-indigo-50 text-indigo-600" label="Bank account" value={agent.bankAccountNumber} onCopied={copied} />
+          </Card>
+
+          <Card title="Address" icon={<FaMapMarkerAlt />}>
+            <InfoRow icon={<FaMapMarkerAlt />} iconBg="bg-red-50 text-red-500" label="Present address" value={agent.presentAddress} copyable={false} />
+            <InfoRow icon={<FaHome />} iconBg="bg-slate-100 text-slate-600" label="Permanent address" value={agent.permanentAddress} copyable={false} />
+          </Card>
+        </div>
+
+        <Card title="Emergency contact" icon={<FaLifeRing />}>
+          <div className="grid gap-x-6 sm:grid-cols-2 sm:divide-y-0">
+            <InfoRow icon={<FaUser />} iconBg="bg-amber-50 text-amber-600" label="Name" value={agent.emergencyName} copyable={false} />
+            <InfoRow icon={<FaUser />} iconBg="bg-amber-50 text-amber-600" label="Relation" value={agent.emergencyRelation} copyable={false} />
+            <InfoRow icon={<FaPhone />} iconBg="bg-amber-50 text-amber-600" label="Mobile" value={agent.emergencyMobile} href={agent.emergencyMobile ? `tel:${agent.emergencyMobile}` : undefined} onCopied={copied} />
+            <InfoRow icon={<FaMapMarkerAlt />} iconBg="bg-amber-50 text-amber-600" label="Address" value={agent.emergencyAddress} copyable={false} />
           </div>
-        </div>
-      </section>
-
-      {/* ===== Details ===== */}
-      <div className="grid gap-4 md:grid-cols-2">
-        <Card title="Contact & payment" icon={<FaPhone />}>
-          <InfoRow icon={<FaPhone />} iconBg="bg-blue-50 text-blue-600" label="Mobile" value={agent.mobileNo} href={agent.mobileNo ? `tel:${agent.mobileNo}` : undefined} onCopied={copied} />
-          <InfoRow icon={<FaWhatsapp />} iconBg="bg-green-50 text-green-600" label="WhatsApp" value={agent.whatsAppNumber} href={waNumber ? `https://wa.me/${waNumber}` : undefined} onCopied={copied} />
-          <InfoRow icon={<FaMoneyBillWave />} iconBg="bg-pink-50 text-pink-600" label="bKash" value={agent.bkashNumber} onCopied={copied} />
-          <InfoRow icon={<FaUniversity />} iconBg="bg-indigo-50 text-indigo-600" label="Bank account" value={agent.bankAccountNumber} onCopied={copied} />
         </Card>
 
-        <Card title="Address" icon={<FaMapMarkerAlt />}>
-          <InfoRow icon={<FaMapMarkerAlt />} iconBg="bg-red-50 text-red-500" label="Present address" value={agent.presentAddress} copyable={false} />
-          <InfoRow icon={<FaHome />} iconBg="bg-slate-100 text-slate-600" label="Permanent address" value={agent.permanentAddress} copyable={false} />
-        </Card>
-      </div>
+        {/* ===== Edit modal ===== */}
+        {isEditOpen && (
+          <div
+            className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 sm:items-center sm:p-4"
+            onMouseDown={(e) => e.target === e.currentTarget && !loading && setIsEditOpen(false)}
+          >
+            <div role="dialog" aria-modal="true" aria-labelledby="edit-title" className="flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl">
+              <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6">
+                <h2 id="edit-title" className="text-lg font-bold text-slate-900">Edit profile</h2>
+                <button onClick={() => setIsEditOpen(false)} aria-label="Close" className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
+                  <FaTimes />
+                </button>
+              </div>
 
-      <Card title="Emergency contact" icon={<FaLifeRing />}>
-        <div className="grid gap-x-6 sm:grid-cols-2 sm:divide-y-0">
-          <InfoRow icon={<FaUser />} iconBg="bg-amber-50 text-amber-600" label="Name" value={agent.emergencyName} copyable={false} />
-          <InfoRow icon={<FaUser />} iconBg="bg-amber-50 text-amber-600" label="Relation" value={agent.emergencyRelation} copyable={false} />
-          <InfoRow icon={<FaPhone />} iconBg="bg-amber-50 text-amber-600" label="Mobile" value={agent.emergencyMobile} href={agent.emergencyMobile ? `tel:${agent.emergencyMobile}` : undefined} onCopied={copied} />
-          <InfoRow icon={<FaMapMarkerAlt />} iconBg="bg-amber-50 text-amber-600" label="Address" value={agent.emergencyAddress} copyable={false} />
-        </div>
-      </Card>
-
-      {/* ===== Edit modal ===== */}
-      {isEditOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 sm:items-center sm:p-4"
-          onMouseDown={(e) => e.target === e.currentTarget && !loading && setIsEditOpen(false)}
-        >
-          <div role="dialog" aria-modal="true" aria-labelledby="edit-title" className="flex max-h-[92vh] w-full max-w-2xl flex-col rounded-t-2xl bg-white shadow-2xl sm:rounded-2xl">
-            <div className="flex items-center justify-between border-b border-slate-200 px-5 py-4 sm:px-6">
-              <h2 id="edit-title" className="text-lg font-bold text-slate-900">Edit profile</h2>
-              <button onClick={() => setIsEditOpen(false)} aria-label="Close" className="rounded-md p-2 text-slate-400 hover:bg-slate-100 hover:text-slate-700">
-                <FaTimes />
-              </button>
-            </div>
-
-            <form onSubmit={handleUpdate} className="flex min-h-0 flex-1 flex-col">
-              <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5 sm:px-6">
-                {/* Photo */}
-                <div className="flex items-center gap-4">
-                  <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-100">
-                    {photoPreview ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={photoPreview} alt="New profile photo preview" className="h-full w-full object-cover" />
-                    ) : agent.photo ? (
-                      <Image src={agent.photo} alt={agent.name} fill unoptimized className="object-cover" />
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center text-2xl text-slate-400"><FaUser /></div>
-                    )}
+              <form onSubmit={handleUpdate} className="flex min-h-0 flex-1 flex-col">
+                <div className="flex-1 space-y-6 overflow-y-auto px-5 py-5 sm:px-6">
+                  {/* Photo */}
+                  <div className="flex items-center gap-4">
+                    <div className="relative h-20 w-20 shrink-0 overflow-hidden rounded-full bg-slate-100">
+                      {photoPreview || agentPhoto ? (
+                        <Image
+                          src={(photoPreview || agentPhoto) as string}
+                          alt={photoPreview ? "New profile photo preview" : agent.name}
+                          fill
+                          sizes="80px"
+                          unoptimized
+                          className="object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-full w-full items-center justify-center text-2xl text-slate-400"><FaUser /></div>
+                      )}
+                    </div>
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-within:outline focus-within:outline-2 focus-within:outline-emerald-600">
+                      <FaCamera /> Change photo
+                      <input type="file" accept="image/*" onChange={handleFileChange} className="sr-only" />
+                    </label>
                   </div>
-                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50 focus-within:outline focus-within:outline-2 focus-within:outline-emerald-600">
-                    <FaCamera /> Change photo
-                    <input type="file" accept="image/*" onChange={handleFileChange} className="sr-only" />
-                  </label>
+
+                  {FORM_SECTIONS.map((section) => (
+                    <fieldset key={section.title}>
+                      <legend className="mb-3 text-sm font-semibold text-slate-900">{section.title}</legend>
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        {section.fields.map((f) => (
+                          <div key={f.name as string}>
+                            <label htmlFor={f.name as string} className="mb-1 block text-xs font-medium text-slate-600">
+                              {f.label}
+                            </label>
+                            <input
+                              id={f.name as string}
+                              type="text"
+                              name={f.name as string}
+                              value={(editFormData[f.name] as string) || ""}
+                              onChange={handleInputChange}
+                              required={["name", "fathersName", "mobileNo"].includes(f.name as string)}
+                              className={inputCls}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </fieldset>
+                  ))}
+
+                  <p className="rounded-lg bg-amber-50 px-3 py-2 text-xs text-amber-800">
+                    Mobile number bodlale porer bar notun number diye login korte hobe.
+                  </p>
                 </div>
 
-                {FORM_SECTIONS.map((section) => (
-                  <fieldset key={section.title}>
-                    <legend className="mb-3 text-sm font-semibold text-slate-900">{section.title}</legend>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {section.fields.map((f) => (
-                        <div key={f.name as string}>
-                          <label htmlFor={f.name as string} className="mb-1 block text-xs font-medium text-slate-600">
-                            {f.label}
-                          </label>
-                          <input
-                            id={f.name as string}
-                            type="text"
-                            name={f.name as string}
-                            value={(editFormData[f.name] as string) || ""}
-                            onChange={handleInputChange}
-                            required={f.name === "name"}
-                            className={inputCls}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  </fieldset>
-                ))}
-              </div>
-
-              {/* Sticky footer so Save is always visible */}
-              <div className="flex justify-end gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:px-6">
-                <button type="button" onClick={() => setIsEditOpen(false)} disabled={loading} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
-                  Cancel
-                </button>
-                <button type="submit" disabled={loading} className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-60">
-                  {loading ? "Saving..." : "Save changes"}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* ===== Delete modal ===== */}
-      {isDeleteOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 p-4"
-          onMouseDown={(e) => e.target === e.currentTarget && !loading && setIsDeleteOpen(false)}
-        >
-          <div role="alertdialog" aria-modal="true" aria-labelledby="del-title" className="w-full max-w-md rounded-2xl bg-white p-6 text-center shadow-2xl">
-            <span className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 text-xl text-red-600">
-              <FaExclamationTriangle />
-            </span>
-            <h3 id="del-title" className="mb-2 text-lg font-bold text-slate-900">Delete agent profile?</h3>
-            <p className="mb-6 text-sm leading-relaxed text-slate-500">
-              আপনি কি নিশ্চিত যে আপনি এই এজেন্ট প্রোফাইলটি ডিলিট করতে চান? এই কাজ পরবর্তীতে আর ফিরিয়ে আনা সম্ভব হবে না।
-            </p>
-            <div className="flex gap-3">
-              <button onClick={() => setIsDeleteOpen(false)} disabled={loading} className="flex-1 rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
-                Cancel
-              </button>
-              <button onClick={handleDelete} disabled={loading} className="flex-1 rounded-lg bg-red-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-red-700 disabled:opacity-60">
-                {loading ? "Deleting..." : "Delete profile"}
-              </button>
+                {/* Sticky footer so Save is always visible */}
+                <div className="flex justify-end gap-3 border-t border-slate-200 bg-white px-5 py-4 sm:px-6">
+                  <button type="button" onClick={() => setIsEditOpen(false)} disabled={loading} className="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={loading} className="rounded-lg bg-emerald-700 px-5 py-2.5 text-sm font-medium text-white hover:bg-emerald-800 disabled:opacity-60">
+                    {loading ? "Saving..." : "Save changes"}
+                  </button>
+                </div>
+              </form>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* ===== Toast ===== */}
-      {toast && (
-        <div
-          role="status"
-          aria-live="polite"
-          className={`fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-lg ${
-            toast.type === "success" ? "bg-emerald-700" : "bg-red-600"
-          }`}
-        >
-          {toast.text}
-        </div>
-      )}
-    </div>
+        {/* ===== Toast ===== */}
+        {toast && (
+          <div
+            role="status"
+            aria-live="polite"
+            className={`fixed bottom-6 left-1/2 z-[60] -translate-x-1/2 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-lg ${
+              toast.type === "success" ? "bg-emerald-700" : "bg-red-600"
+            }`}
+          >
+            {toast.text}
+          </div>
+        )}
+      </div>
     </PageBackground>
   );
 };

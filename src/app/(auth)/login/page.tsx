@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import {
   FaPhoneAlt,
   FaEnvelope,
@@ -15,8 +16,17 @@ import { handleSignIn } from "@/lib/auth-service";
 import { verifyAgent } from "@/lib/serviceapi/agent/api";
 import H1 from "@/assets/H-1.avif";
 
+// Only allow internal paths (blocks open redirect like ?callbackUrl=https://evil.com)
+function getSafeCallbackUrl(raw: string | null): string {
+  const fallback = "/dashboard";
+  if (!raw) return fallback;
+  if (raw.startsWith("/") && !raw.startsWith("//") && !raw.startsWith("/\\")) {
+    return raw;
+  }
+  return fallback;
+}
+
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   const [loginType, setLoginType] = useState<"user" | "admin">("user");
@@ -34,23 +44,30 @@ function LoginForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleTabSwitch = (type: "user" | "admin") => {
+    setLoginType(type);
+    setError("");
+    setShowUserPassword(false);
+    setShowPassword(false);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError("");
     setLoading(true);
 
-    const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+    const callbackUrl = getSafeCallbackUrl(searchParams.get("callbackUrl"));
 
     try {
       if (loginType === "user") {
-        // Agent Verification via Mobile
-        const data = await verifyAgent(mobileNo, userPassword);
+        // Agent login: mobile + password (shudhu digit pathano hoy)
+        const data = await verifyAgent(mobileNo.replace(/\D/g, ""), userPassword);
 
-        if (data.agent) {
+        if (data?.agent) {
           localStorage.setItem("agentData", JSON.stringify(data.agent));
-          document.cookie = "agent_verified=true; path=/; max-age=604800";
 
-          // 🟢 Hard navigation ensures proxy.ts reads updated cookies instantly
+          // Session cookie backend theke already set hoyeche.
+          // Hard navigation: middleware notun cookie shathe shathe pabe.
           window.location.href = callbackUrl;
         } else {
           setError(data?.message || "Agent verification failed.");
@@ -60,7 +77,6 @@ function LoginForm() {
         await handleSignIn(
           { email, password },
           () => {
-            // 🟢 Hard navigation to flush client cache and evaluate proxy.ts
             window.location.href = callbackUrl;
           },
           (errMsg) => {
@@ -68,11 +84,23 @@ function LoginForm() {
           }
         );
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Login verification error:", err);
-      setError(
-        err?.message || "Login failed. Please check your network or inputs."
-      );
+
+      let message = "Login failed. Please check your network or inputs.";
+      if (err instanceof Error) {
+        if (err.message.includes("link nai")) {
+          message =
+            "This mobile number is not linked to any agent account. Please apply to become an agent first.";
+        } else if (err.message.includes("pawa jay nai")) {
+          message = "No agent found with this mobile number.";
+        } else if (err.message.includes("Password bhul")) {
+          message = "Incorrect password.";
+        } else {
+          message = err.message;
+        }
+      }
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -81,23 +109,26 @@ function LoginForm() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-emerald-50/50 via-white to-amber-50/40">
       <div className="grid min-h-screen lg:grid-cols-2">
+        {/* Left Visual Banner Section */}
         <div className="relative hidden lg:block">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url(${H1.src})` }}
+          <Image
+            src={H1}
+            alt="Login Banner"
+            fill
+            priority
+            className="object-cover"
+            sizes="50vw"
           />
         </div>
 
+        {/* Right Form Section */}
         <div className="flex items-center justify-center px-6 py-12 sm:px-10">
           <div className="w-full max-w-md">
             {/* Login Type Switcher */}
             <div className="mb-6 flex rounded-2xl bg-slate-100 p-1.5 shadow-inner">
               <button
                 type="button"
-                onClick={() => {
-                  setLoginType("user");
-                  setError("");
-                }}
+                onClick={() => handleTabSwitch("user")}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
                   loginType === "user"
                     ? "bg-white text-emerald-700 shadow-sm"
@@ -108,10 +139,7 @@ function LoginForm() {
               </button>
               <button
                 type="button"
-                onClick={() => {
-                  setLoginType("admin");
-                  setError("");
-                }}
+                onClick={() => handleTabSwitch("admin")}
                 className={`flex flex-1 items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-all ${
                   loginType === "admin"
                     ? "bg-white text-amber-700 shadow-sm"
@@ -186,8 +214,8 @@ function LoginForm() {
                   </div>
                 </>
               ) : (
-                /* ADMIN LOGIN FIELDS */
                 <>
+                  {/* ADMIN EMAIL FIELD */}
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
                       Admin Email
@@ -205,6 +233,7 @@ function LoginForm() {
                     </div>
                   </div>
 
+                  {/* ADMIN PASSWORD FIELD */}
                   <div>
                     <label className="mb-2 block text-xs font-bold uppercase tracking-wider text-slate-700">
                       Password
@@ -248,7 +277,7 @@ function LoginForm() {
             <p className="mt-6 text-center text-sm text-slate-600">
               New Agent?{" "}
               <Link
-                href="/become-agent"
+                href="/becomeagent"
                 className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline"
               >
                 Apply Here
@@ -263,7 +292,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center font-medium text-slate-500">
+          Loading page...
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

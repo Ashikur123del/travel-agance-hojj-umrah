@@ -6,14 +6,17 @@ import {
     FaCog,
     FaRegUser,
     FaUserCircle,
-    FaUserEdit,
+    FaUserPlus,
+    FaList,
+    FaMoneyBillWave,
+    FaUsers,
 } from "react-icons/fa";
 
 export interface NavItem {
     label: string;
     href: string;
     icon: IconType;
-    allowedRoles: string[]; // যেমন: ['admin'], ['agent', 'admin'], ইত্যাদি
+    allowedRoles: string[];
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -21,16 +24,18 @@ export const NAV_ITEMS: NavItem[] = [
         label: "Dashboard",
         href: "/dashboard",
         icon: FaTachometerAlt,
-        allowedRoles: ["admin", "agent", "user"],
+        allowedRoles: ["admin", "agent"],
     },
+
+    // ---------- Admin only (website content) ----------
     {
-        label: "Hero Slider Add",
+        label: "Hero Slider",
         href: "/heroslider",
         icon: FaUser,
         allowedRoles: ["admin"],
     },
     {
-        label: "Add a News",
+        label: "Add News",
         href: "/addnews",
         icon: FaPlane,
         allowedRoles: ["admin"],
@@ -47,20 +52,38 @@ export const NAV_ITEMS: NavItem[] = [
         icon: FaRegUser,
         allowedRoles: ["admin"],
     },
+    {
+        label: "Agents",
+        href: "/agents",
+        icon: FaUsers,
+        allowedRoles: ["admin"],
+    },
 
-    // 👇 ১. My Profile লিংক (Agent ও User এর জন্য)
+    // ---------- Admin + Agent (Hajjah) ----------
+    {
+        label: "Create Hajjah",
+        href: "/hajjahadd",
+        icon: FaUserPlus,
+        allowedRoles: ["admin", "agent"],
+    },
+    {
+        label: "Hajjah List",
+        href: "/hajjahlist",
+        icon: FaList,
+        allowedRoles: ["admin", "agent"],
+    },
+    {
+        label: "Due / Payment",
+        href: "/duepayment",
+        icon: FaMoneyBillWave,
+        allowedRoles: ["admin", "agent"],
+    },
+
+    // ---------- Profile ----------
     {
         label: "My Profile",
         href: "/myprofile",
         icon: FaUserCircle,
-        allowedRoles: ["agent", "user", "admin"],
-    },
-
-    // 👇 ২. Agent Request / Profile Update (আপনার প্রয়োজন অনুযায়ী href ও label সামঞ্জস্য করতে পারেন)
-    {
-        label: "Create Hajjah",
-        href: "/hajjahadd",
-        icon: FaUserEdit,
-        allowedRoles: ["user"],
+        allowedRoles: ["admin", "agent"],
     },
 ];

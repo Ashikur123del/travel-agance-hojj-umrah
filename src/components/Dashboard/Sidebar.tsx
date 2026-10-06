@@ -1,21 +1,40 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FaBars, FaTimes, FaHome, FaSignOutAlt } from "react-icons/fa";
 import { authClient } from "@/lib/auth-client";
 import { NAV_ITEMS } from "@/config/navigation";
 import WithRole from "@/components/auth/WithRole";
 
+// Agent cookie থেকে role বের করা
+function getAgentCookieRole(): string | null {
+  if (typeof document === "undefined") return null;
+  const cookies = document.cookie.split(";").map((c) => c.trim());
+  const agentCookie = cookies.find((c) => c.startsWith("agent_verified="));
+  if (agentCookie) {
+    const val = agentCookie.split("=")[1];
+    if (val && val !== "" && val !== "false") return "agent";
+  }
+  return null;
+}
+
 export default function DashboardSidebar() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [agentRole, setAgentRole] = useState<string | null>(null);
 
   const { data: session } = authClient.useSession();
   const user = session?.user as (typeof session & { role?: string }) | undefined;
-  const userRole = user?.role || "user";
 
-const handleLogout = async () => {
+  useEffect(() => {
+    setAgentRole(getAgentCookieRole());
+  }, []);
+
+  // Admin session role অথবা Agent cookie role
+  const userRole = user?.role || agentRole || "user";
+
+  const handleLogout = async () => {
     try {
       // 1. Better Auth session logout (Admin-এর জন্য)
       await authClient.signOut({
@@ -34,7 +53,7 @@ const handleLogout = async () => {
   };
 
   const clearSessionAndRedirect = () => {
-    // Agent verified cookie ডিলিট করার নিয়ম (Past date দেওয়া)
+    // Agent verified cookie ডিলিট করার নিয়ম (Past date দেওয়া)
     document.cookie = "agent_verified=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     document.cookie = "better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
     document.cookie = "__Secure-better-auth.session_token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";

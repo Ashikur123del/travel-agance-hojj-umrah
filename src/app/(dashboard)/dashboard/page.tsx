@@ -37,27 +37,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-slate-50/50 p-4 lg:py-2 lg:px-2">
       {/* Dynamic Header */}
-      <div className="mb-3 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-950 p-3 text-white shadow-xl">
-        <div className="max-w-2xl">
-          <span className="mb-3 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-300">
-            {userRole === "admin"
-              ? "Admin Panel"
-              : userRole === "agent"
-              ? "Agent Portal"
-              : "User Registration"}
-          </span>
-          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">
-            Welcome, {userName}!
-          </h1>
-          <p className="mt-2 text-sm text-teal-100/80 md:text-base">
-            {userRole === "admin"
-              ? "Manage website content, slides, news, and site settings."
-              : userRole === "agent"
-              ? "Access your agent features and manage operations."
-              : "Fill out the registration form below to apply as an agent."}
-          </p>
-        </div>
-      </div>
+    {userRole === "admin" && ( <div className="mb-3 rounded-3xl bg-gradient-to-r from-teal-900 via-teal-800 to-emerald-950 p-3 text-white shadow-xl"> <div className="max-w-2xl"> <span className="mb-3 inline-block rounded-full border border-emerald-500/30 bg-emerald-500/20 px-3 py-1 text-xs font-semibold uppercase tracking-wider text-emerald-300"> Admin Panel </span> <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl"> Welcome, {userName}! </h1> </div> </div> )}
 
       {/* 1. ADMIN DASHBOARD */}
       <WithRole roles={["admin"]}>

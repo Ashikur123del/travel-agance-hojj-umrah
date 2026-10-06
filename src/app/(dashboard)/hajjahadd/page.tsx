@@ -6,108 +6,65 @@ import {
   FaUser,
   FaUserTie,
   FaPhoneAlt,
+  FaWhatsapp,
   FaMapMarkerAlt,
   FaWallet,
   FaCamera,
   FaPaperPlane,
   FaTimes,
   FaHashtag,
-  FaTrash,
   FaIdCard,
   FaPassport,
   FaHeartbeat,
   FaBoxes,
   FaUserShield,
   FaCalendarAlt,
-  FaGlobeAsia,
-  FaBriefcase,
   FaHome,
   FaBed,
-  FaUtensils,
   FaNotesMedical,
   FaPlane,
+  FaSyringe,
+  FaUserFriends,
 } from "react-icons/fa";
 import { toast } from "react-toastify";
 
-interface Entry {
-  slNo: number;
+import { createHajjah, getErrorMessage } from "@/lib/serviceapi/hajjah/api";
+import type { HajjahFormInput } from "@/types/hajjah.type";
 
-  // Personal
-  name: string;
-  mothersName: string;
-  fathersName: string;
-  dob: string;
-  gender: string;
-  nationality: string;
-  maritalStatus: string;
-  occupation: string;
-  nidNo: string;
-  mobileNo: string;
-  district: string;
-  presentAddress: string;
-  permanentAddress: string;
-  photoUrl: string | null;
-
-  // Passport & Mahram
-  passportNo: string;
-  passportType: string;
-  passportIssueDate: string;
-  passportExpiry: string;
-  mahramName: string;
-  mahramRelation: string;
-  mahramMobile: string;
-
-  // Health & Emergency
-  bloodGroup: string;
-  medicalConditions: string;
-  emergencyContactName: string;
-  emergencyContactRelation: string;
-  emergencyContactPhone: string;
-
-  // Travel
-  travelDate: string;
-  roomType: string;
-  foodPreference: string;
-  specialAssistance: string;
-  notes: string;
-
-  // Package & Payment
-  packageType: string;
-  totalAmount: string;
-  paidAmount: string;
-  bkashNumber: string;
-}
-
-const BD_PHONE = /^01[3-9]\d{8}$/;
-
+// =========================
+// Initial form
+// =========================
 const initialFormData = {
   // Personal
   name: "",
-  mothersName: "",
   fathersName: "",
+  mothersName: "",
   dob: "",
   gender: "Female",
-  nationality: "Bangladeshi",
   maritalStatus: "Married",
-  occupation: "",
   nidNo: "",
   mobileNo: "",
+  whatsappNo: "",
   district: "",
   presentAddress: "",
   permanentAddress: "",
 
-  // Passport & Mahram
+  // Passport
   passportNo: "",
-  passportType: "Ordinary",
   passportIssueDate: "",
   passportExpiry: "",
+  passportIssuePlace: "Dhaka",
+
+  // Mahram
   mahramName: "",
   mahramRelation: "Husband",
   mahramMobile: "",
+  mahramPassportNo: "",
 
   // Health & Emergency
   bloodGroup: "O+",
   medicalConditions: "",
+  meningitisVaccine: false,
   emergencyContactName: "",
   emergencyContactRelation: "Relative",
   emergencyContactPhone: "",
@@ -115,25 +72,134 @@ const initialFormData = {
   // Travel
   travelDate: "",
   roomType: "Quad",
-  foodPreference: "Regular",
+  previousHajj: false,
   specialAssistance: "",
   notes: "",
 
   // Package & Payment
   packageType: "Economy",
-  totalAmount: "0",
-  paidAmount: "0",
-  bkashNumber: "",
+  totalAmount: "",
+  paidAmount: "",
+  paymentMethod: "bKash",
+  paymentNumber: "",
+  transactionId: "",
+  referredBy: "",
+
+  // Consent (backend e pathano hoy na)
+  agree: false,
 };
 
+type FormState = typeof initialFormData;
+type FieldErrors = Partial<Record<keyof FormState, string>>;
+
+// =========================
+// Constants & helpers
+// =========================
+const BD_PHONE = /^01[3-9]\d{8}$/;
+const NID_REGEX = /^(\d{10}|\d{13}|\d{17})$/;
+const PASSPORT_REGEX = /^[A-Z]{1,2}\d{7,8}$/i;
+
+const PHONE_FIELDS = [
+  "mobileNo",
+  "whatsappNo",
+  "mahramMobile",
+  "emergencyContactPhone",
+  "paymentNumber",
+];
+const DIGIT_FIELDS = ["nidNo", "totalAmount", "paidAmount"];
+
+const calcAge = (dob: string) => {
+  if (!dob) return null;
+  const d = new Date(dob);
+  if (isNaN(d.getTime())) return null;
+  const now = new Date();
+  let age = now.getFullYear() - d.getFullYear();
+  const m = now.getMonth() - d.getMonth();
+  if (m < 0 || (m === 0 && now.getDate() < d.getDate())) age--;
+  return age;
+};
+
+const inputClass =
+  "w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100";
+
+const inputErrorClass =
+  "w-full rounded-lg border border-red-400 bg-red-50 px-3 py-1.5 text-xs text-slate-700 outline-none transition focus:border-red-500 focus:ring-2 focus:ring-red-100";
+
+const labelClass =
+  "mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-600";
+
+const sectionTitleClass =
+  "flex items-center gap-2 border-b border-slate-100 pb-2 text-sm font-bold text-slate-800";
+
+const gridClass = "grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4";
+
+// Small wrapper to keep markup short
+function Field({
+  label,
+  icon,
+  className = "",
+  error,
+  children,
+}: {
+  label: string;
+  icon?: React.ReactNode;
+  className?: string;
+  error?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className={className}>
+      <label className={labelClass}>
+        {icon}
+        {label}
+      </label>
+      {children}
+      {error && (
+        <p className="mt-0.5 text-[10px] font-medium text-red-500">{error}</p>
+      )}
+    </div>
+  );
+}
+
+function Section({
+  title,
+  icon,
+  first,
+  children,
+}: {
+  title: string;
+  icon: React.ReactNode;
+  first?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className={`${first ? "" : "mt-5"} space-y-3`}>
+      <div className={sectionTitleClass}>
+        {icon}
+        <span>{title}</span>
+      </div>
+      {children}
+    </section>
+  );
+}
+
+// =========================
+// Component
+// =========================
 export default function HajjahAdd() {
-  const [slNo, setSlNo] = useState(1);
-  const [entries, setEntries] = useState<Entry[]>([]);
-
-  const [formData, setFormData] = useState(initialFormData);
-
+  const [formData, setFormData] = useState<FormState>(initialFormData);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
+
+  const age = calcAge(formData.dob);
+  const total = Number(formData.totalAmount) || 0;
+  const paid = Number(formData.paidAmount) || 0;
+  const due = Math.max(total - paid, 0);
+
+  const fieldClass = (name: keyof FormState) =>
+    errors[name] ? inputErrorClass : inputClass;
 
   // =========================
   // Handle Input
@@ -143,320 +209,280 @@ export default function HajjahAdd() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >
   ) => {
-    const { name, value } = e.target;
+    const target = e.target;
+    const { name } = target;
 
-    let finalVal = value;
+    let finalVal: string | boolean = target.value;
 
-    // Only number for phone fields
-    if (
-      name === "mobileNo" ||
-      name === "bkashNumber" ||
-      name === "mahramMobile" ||
-      name === "emergencyContactPhone"
-    ) {
-      finalVal = value.replace(/\D/g, "");
+    if (target instanceof HTMLInputElement && target.type === "checkbox") {
+      finalVal = target.checked;
+    } else if (PHONE_FIELDS.includes(name) || DIGIT_FIELDS.includes(name)) {
+      finalVal = target.value.replace(/\D/g, "");
+    } else if (name === "passportNo") {
+      finalVal = target.value.toUpperCase().replace(/[^A-Z0-9]/gi, "");
     }
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: finalVal,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: finalVal }));
+
+    // Clear error for this field when user types
+    if (errors[name as keyof FormState]) {
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[name as keyof FormState];
+        return next;
+      });
+    }
   };
 
   // =========================
   // Photo Upload
   // =========================
-  const handlePhotoChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
+    e.target.value = "";
 
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      return toast.error(
-        "Shudhu chobi (JPG, PNG) upload kora jabe"
-      );
+      return toast.error("Shudhu chobi (JPG, PNG) upload kora jabe");
     }
-
     if (file.size > 2 * 1024 * 1024) {
-      return toast.error(
-        "Chobir size 2MB er kom hote hobe"
-      );
+      return toast.error("Chobir size 2MB er kom hote hobe");
     }
 
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
     setPhotoFile(file);
     setPhotoPreview(URL.createObjectURL(file));
   };
 
   const clearPhoto = () => {
+    if (photoPreview) URL.revokeObjectURL(photoPreview);
     setPhotoFile(null);
     setPhotoPreview(null);
   };
 
   // =========================
-  // Validation
+  // Validation (returns errors object)
   // =========================
-  const validateForm = () => {
-    if (!formData.name.trim()) {
-      toast.error("Full Name dorkar");
-      return false;
+  const validateForm = (): FieldErrors => {
+    const f = formData;
+    const errs: FieldErrors = {};
+
+    if (!f.name.trim()) errs.name = "Full Name dorkar";
+    if (!f.fathersName.trim()) errs.fathersName = "Father's Name dorkar";
+    if (!f.dob) errs.dob = "Date of Birth dorkar";
+    else if (age !== null && age < 12) errs.dob = "Sothik Date of Birth din";
+
+    if (!NID_REGEX.test(f.nidNo))
+      errs.nidNo = "NID 10, 13 ba 17 digit hote hobe";
+
+    if (!BD_PHONE.test(f.mobileNo))
+      errs.mobileNo = "Sothik Mobile Number din (11 digits)";
+
+    if (f.whatsappNo && !BD_PHONE.test(f.whatsappNo))
+      errs.whatsappNo = "Sothik WhatsApp Number din";
+
+    if (!f.presentAddress.trim()) errs.presentAddress = "Present Address dorkar";
+
+    // Passport
+    if (!PASSPORT_REGEX.test(f.passportNo))
+      errs.passportNo = "Sothik Passport Number din (jemon A01234567)";
+
+    if (!f.passportExpiry) errs.passportExpiry = "Passport Expiry Date dorkar";
+
+    if (f.passportIssueDate && f.passportExpiry) {
+      if (f.passportIssueDate >= f.passportExpiry) {
+        errs.passportIssueDate = "Issue Date expiry er age hote hobe";
+        errs.passportExpiry = "Expiry Date issue er pore hote hobe";
+      }
     }
 
-    if (!formData.fathersName.trim()) {
-      toast.error("Father's Name dorkar");
-      return false;
+    // Passport min 6 months validity
+    if (f.passportExpiry) {
+      const base = f.travelDate ? new Date(f.travelDate) : new Date();
+      const minExpiry = new Date(base);
+      minExpiry.setMonth(minExpiry.getMonth() + 6);
+      if (new Date(f.passportExpiry) < minExpiry) {
+        errs.passportExpiry =
+          "Passport e kom pokkhe 6 mash validity thakte hobe";
+      }
     }
 
-    if (!formData.nidNo.trim()) {
-      toast.error("NID / Smart Card Number dorkar");
-      return false;
+    // Mahram
+    if (f.gender === "Female") {
+      if (!f.mahramName.trim()) errs.mahramName = "Mahram er Name dorkar";
+      if (!BD_PHONE.test(f.mahramMobile))
+        errs.mahramMobile = "Mahram er sothik Mobile Number din";
+    } else if (f.mahramMobile && !BD_PHONE.test(f.mahramMobile)) {
+      errs.mahramMobile = "Mahram er sothik Mobile Number din";
     }
 
-    if (!BD_PHONE.test(formData.mobileNo)) {
-      toast.error(
-        "Sothik Mobile Number din (11 digits)"
-      );
-      return false;
+    // Emergency
+    if (!f.emergencyContactName.trim())
+      errs.emergencyContactName = "Emergency Contact Name dorkar";
+    if (!BD_PHONE.test(f.emergencyContactPhone))
+      errs.emergencyContactPhone = "Sothik Emergency Mobile Number din";
+    else if (f.emergencyContactPhone === f.mobileNo)
+      errs.emergencyContactPhone =
+        "Emergency number nijer number theke alada hote hobe";
+
+    // Payment
+    if (total <= 0) errs.totalAmount = "Total Package Price din";
+    if (paid > total) errs.paidAmount = "Paid total er beshi hote pare na";
+    if (paid > 0 && f.paymentMethod !== "Cash") {
+      if (!BD_PHONE.test(f.paymentNumber))
+        errs.paymentNumber = "Sothik Payment Number din (11 digits)";
+      if (!f.transactionId.trim()) errs.transactionId = "Transaction ID dorkar";
     }
 
-    if (!formData.presentAddress.trim()) {
-      toast.error("Present Address dorkar");
-      return false;
-    }
+    if (!f.agree) errs.agree = "Shorto o niyom e sommoti din";
 
-    if (!formData.passportNo.trim()) {
-      toast.error("Passport Number dorkar");
-      return false;
-    }
-
-    if (!formData.passportExpiry) {
-      toast.error("Passport Expiry Date dorkar");
-      return false;
-    }
-
-    if (!formData.emergencyContactName.trim()) {
-      toast.error(
-        "Emergency Contact Name dorkar"
-      );
-      return false;
-    }
-
-    if (
-      !BD_PHONE.test(
-        formData.emergencyContactPhone
-      )
-    ) {
-      toast.error(
-        "Sothik Emergency Mobile Number din"
-      );
-      return false;
-    }
-
-    if (!BD_PHONE.test(formData.bkashNumber)) {
-      toast.error(
-        "Sothik Bkash Account Number din (11 digits)"
-      );
-      return false;
-    }
-
-    return true;
+    return errs;
   };
 
   // =========================
-  // Submit
+  // Submit (POST API only)
   // =========================
-  const handleSubmit = (
-    e: React.FormEvent
-  ) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
 
-    if (!validateForm()) return;
+    const errs = validateForm();
+    setErrors(errs);
 
-    const newEntry: Entry = {
-      slNo,
-      ...formData,
-      photoUrl: photoPreview,
-    };
+    if (Object.keys(errs).length > 0) {
+      // First error message toast
+      const firstMsg = Object.values(errs)[0];
+      toast.error(firstMsg);
 
-    setEntries((prev) => [
-      ...prev,
-      newEntry,
-    ]);
+      // Scroll to first error field
+      const firstKey = Object.keys(errs)[0];
+      const el = document.querySelector(`[name="${firstKey}"]`);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      return;
+    }
 
-    toast.success(
-      `Sl No ${slNo} Hajjah Registration shafol hoyeche!`
-    );
+    const { agree, ...payload } = formData;
+    void agree;
 
-    // Reset
-    setSlNo((prev) => prev + 1);
+    setSubmitting(true);
 
-    setFormData({
-      ...initialFormData,
-    });
+    try {
+      const res = await createHajjah(payload as HajjahFormInput, photoFile);
 
-    clearPhoto();
+      toast.success(
+        `Sl No ${res.newHajjah.slNo} Hajjah Registration shafol hoyeche! (Pending)`
+      );
+
+      setFormData({ ...initialFormData });
+      clearPhoto();
+      setErrors({});
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  // =========================
-  // Remove
-  // =========================
-  const handleRemove = (
-    slNoToRemove: number
-  ) => {
-    setEntries((prev) =>
-      prev.filter(
-        (item) => item.slNo !== slNoToRemove
-      )
-    );
-
-    toast.info(
-      `Sl No ${slNoToRemove} muche fela hoyeche`
-    );
-  };
-
-  // =========================
-  // Common Input Class
-  // =========================
-  const inputClass =
-    "w-full rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-700 outline-none transition focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100";
-
-  const labelClass =
-    "mb-1 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wide text-slate-600";
-
-  const sectionTitleClass =
-    "flex items-center gap-2 border-b border-slate-100 pb-2 text-sm font-bold text-slate-800";
+  const showMahramWarning =
+    formData.gender === "Female" && age !== null && age < 45;
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-emerald-100/70 via-slate-50 to-amber-100/60 p-3 sm:p-4">
       <div className="mx-auto max-w-7xl space-y-4">
-
-        {/* =========================
-            HEADER
-        ========================= */}
+        {/* HEADER */}
         <motion.div
-          initial={{
-            opacity: 0,
-            y: 8,
-          }}
-          animate={{
-            opacity: 1,
-            y: 0,
-          }}
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
           className="text-center"
         >
           <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-600">
             Hajjah Registration
           </p>
-
           <h1 className="mt-0.5 text-2xl font-extrabold text-slate-900 sm:text-3xl">
             Hajjah{" "}
-            <span className="text-amber-600">
-              Registration Portal
-            </span>
+            <span className="text-amber-600">Registration Portal</span>
           </h1>
-
           <p className="mt-1 text-[11px] text-slate-500">
-            Complete all required information below
+            * chihnito ghor gulo obosshoy puron korun
           </p>
         </motion.div>
 
-        {/* =========================
-            FORM
-        ========================= */}
+        {/* FORM */}
         <form
           onSubmit={handleSubmit}
           className="mx-auto rounded-2xl border border-white/80 bg-white/90 p-4 shadow-xl backdrop-blur-md sm:p-5"
         >
-
-          {/* =====================================================
-              PERSONAL DETAILS
-          ===================================================== */}
-          <section className="space-y-3">
-            <div className={sectionTitleClass}>
-              <FaUser className="text-emerald-600" />
-              <span>Personal Details</span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-
-              {/* Sl No */}
-              <div>
-                <label className={labelClass}>
-                  <FaHashtag className="text-emerald-600" />
-                  Sl No
-                </label>
-
+          {/* ================= PERSONAL ================= */}
+          <Section
+            first
+            title="Personal Details"
+            icon={<FaUser className="text-emerald-600" />}
+          >
+            <div className={gridClass}>
+              <Field
+                label="Sl No"
+                icon={<FaHashtag className="text-emerald-600" />}
+              >
                 <input
-                  value={slNo}
+                  value="Auto"
                   readOnly
                   className={`${inputClass} bg-slate-100 font-semibold text-slate-500`}
                 />
-              </div>
+              </Field>
 
-              {/* Gender */}
-              <div>
-                <label className={labelClass}>
-                  <FaUser className="text-emerald-600" />
-                  Gender
-                </label>
+              <Field
+                label="Full Name (as in passport) *"
+                icon={<FaUser className="text-emerald-600" />}
+                className="md:col-span-2"
+                error={errors.name}
+              >
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  placeholder="Passport er moto full name"
+                  className={fieldClass("name")}
+                />
+              </Field>
 
+              <Field
+                label="Gender"
+                icon={<FaUser className="text-emerald-600" />}
+              >
                 <select
                   name="gender"
                   value={formData.gender}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="Female">
-                    Female
-                  </option>
-                  <option value="Male">
-                    Male
-                  </option>
+                  <option value="Female">Female</option>
+                  <option value="Male">Male</option>
                 </select>
-              </div>
+              </Field>
 
-              {/* Full Name */}
-              <div className="md:col-span-2">
-                <label className={labelClass}>
-                  <FaUser className="text-emerald-600" />
-                  Full Name *
-                </label>
-
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  placeholder="Enter full name"
-                  className={inputClass}
-                />
-              </div>
-
-              {/* Father's Name */}
-              <div>
-                <label className={labelClass}>
-                  <FaUserTie className="text-emerald-600" />
-                  Father's Name *
-                </label>
-
+              <Field
+                label="Father's Name *"
+                icon={<FaUserTie className="text-emerald-600" />}
+                error={errors.fathersName}
+              >
                 <input
                   type="text"
                   name="fathersName"
                   value={formData.fathersName}
                   onChange={handleChange}
                   placeholder="Father's name"
-                  className={inputClass}
+                  className={fieldClass("fathersName")}
                 />
-              </div>
+              </Field>
 
-              {/* Mother's Name */}
-              <div>
-                <label className={labelClass}>
-                  <FaUser className="text-emerald-600" />
-                  Mother's Name
-                </label>
-
+              <Field
+                label="Mother's Name"
+                icon={<FaUser className="text-emerald-600" />}
+              >
                 <input
                   type="text"
                   name="mothersName"
@@ -465,109 +491,59 @@ export default function HajjahAdd() {
                   placeholder="Mother's name"
                   className={inputClass}
                 />
-              </div>
+              </Field>
 
-              {/* DOB */}
-              <div>
-                <label className={labelClass}>
-                  <FaCalendarAlt className="text-emerald-600" />
-                  Date of Birth
-                </label>
-
+              <Field
+                label={`Date of Birth *${age !== null ? ` (Age: ${age})` : ""}`}
+                icon={<FaCalendarAlt className="text-emerald-600" />}
+                error={errors.dob}
+              >
                 <input
                   type="date"
                   name="dob"
                   value={formData.dob}
                   onChange={handleChange}
-                  className={inputClass}
+                  max={new Date().toISOString().split("T")[0]}
+                  className={fieldClass("dob")}
                 />
-              </div>
+              </Field>
 
-              {/* Nationality */}
-              <div>
-                <label className={labelClass}>
-                  <FaGlobeAsia className="text-emerald-600" />
-                  Nationality
-                </label>
-
-                <input
-                  type="text"
-                  name="nationality"
-                  value={formData.nationality}
-                  onChange={handleChange}
-                  placeholder="Bangladeshi"
-                  className={inputClass}
-                />
-              </div>
-
-              {/* Marital Status */}
-              <div>
-                <label className={labelClass}>
-                  Marital Status
-                </label>
-
+              <Field label="Marital Status">
                 <select
                   name="maritalStatus"
                   value={formData.maritalStatus}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="Married">
-                    Married
-                  </option>
-                  <option value="Unmarried">
-                    Unmarried
-                  </option>
-                  <option value="Widowed">
-                    Widowed
-                  </option>
-                  <option value="Divorced">
-                    Divorced
-                  </option>
+                  <option value="Married">Married</option>
+                  <option value="Unmarried">Unmarried</option>
+                  <option value="Widowed">Widowed</option>
+                  <option value="Divorced">Divorced</option>
                 </select>
-              </div>
+              </Field>
 
-              {/* Occupation */}
-              <div>
-                <label className={labelClass}>
-                  <FaBriefcase className="text-emerald-600" />
-                  Occupation
-                </label>
-
+              <Field
+                label="NID / Smart Card No *"
+                icon={<FaIdCard className="text-emerald-600" />}
+                error={errors.nidNo}
+              >
                 <input
                   type="text"
-                  name="occupation"
-                  value={formData.occupation}
-                  onChange={handleChange}
-                  placeholder="Occupation"
-                  className={inputClass}
-                />
-              </div>
-
-              {/* NID */}
-              <div>
-                <label className={labelClass}>
-                  <FaIdCard className="text-emerald-600" />
-                  NID / Smart Card No *
-                </label>
-
-                <input
-                  type="text"
+                  inputMode="numeric"
                   name="nidNo"
+                  maxLength={17}
                   value={formData.nidNo}
                   onChange={handleChange}
-                  placeholder="NID Number"
-                  className={inputClass}
+                  placeholder="10 / 13 / 17 digit"
+                  className={fieldClass("nidNo")}
                 />
-              </div>
+              </Field>
 
-              {/* Mobile */}
-              <div>
-                <label className={labelClass}>
-                  <FaPhoneAlt className="text-emerald-600" />
-                  Mobile Number *
-                </label>
-
+              <Field
+                label="Mobile Number *"
+                icon={<FaPhoneAlt className="text-emerald-600" />}
+                error={errors.mobileNo}
+              >
                 <input
                   type="tel"
                   name="mobileNo"
@@ -575,17 +551,30 @@ export default function HajjahAdd() {
                   value={formData.mobileNo}
                   onChange={handleChange}
                   placeholder="017XXXXXXXX"
-                  className={inputClass}
+                  className={fieldClass("mobileNo")}
                 />
-              </div>
+              </Field>
 
-              {/* District */}
-              <div>
-                <label className={labelClass}>
-                  <FaMapMarkerAlt className="text-emerald-600" />
-                  District
-                </label>
+              <Field
+                label="WhatsApp Number"
+                icon={<FaWhatsapp className="text-emerald-600" />}
+                error={errors.whatsappNo}
+              >
+                <input
+                  type="tel"
+                  name="whatsappNo"
+                  maxLength={11}
+                  value={formData.whatsappNo}
+                  onChange={handleChange}
+                  placeholder="017XXXXXXXX"
+                  className={fieldClass("whatsappNo")}
+                />
+              </Field>
 
+              <Field
+                label="District"
+                icon={<FaMapMarkerAlt className="text-emerald-600" />}
+              >
                 <input
                   type="text"
                   name="district"
@@ -594,34 +583,29 @@ export default function HajjahAdd() {
                   placeholder="District"
                   className={inputClass}
                 />
-              </div>
+              </Field>
             </div>
 
-            {/* Addresses */}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-
-              <div>
-                <label className={labelClass}>
-                  <FaHome className="text-amber-600" />
-                  Present Address *
-                </label>
-
+              <Field
+                label="Present Address *"
+                icon={<FaHome className="text-amber-600" />}
+                error={errors.presentAddress}
+              >
                 <textarea
                   name="presentAddress"
                   rows={2}
                   value={formData.presentAddress}
                   onChange={handleChange}
                   placeholder="Present address"
-                  className={`${inputClass} resize-none`}
+                  className={`${fieldClass("presentAddress")} resize-none`}
                 />
-              </div>
+              </Field>
 
-              <div>
-                <label className={labelClass}>
-                  <FaHome className="text-amber-600" />
-                  Permanent Address
-                </label>
-
+              <Field
+                label="Permanent Address"
+                icon={<FaHome className="text-amber-600" />}
+              >
                 <textarea
                   name="permanentAddress"
                   rows={2}
@@ -630,14 +614,12 @@ export default function HajjahAdd() {
                   placeholder="Permanent address"
                   className={`${inputClass} resize-none`}
                 />
-              </div>
+              </Field>
             </div>
 
-            {/* ================= PHOTO ================= */}
+            {/* PHOTO */}
             <div className="flex items-center gap-4 rounded-xl border border-dashed border-emerald-300 bg-emerald-50/40 p-3">
-
               <div className="relative flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg bg-white shadow-inner">
-
                 {photoPreview ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -648,7 +630,6 @@ export default function HajjahAdd() {
                 ) : (
                   <div className="text-center text-slate-400">
                     <FaCamera className="mx-auto text-2xl text-amber-500" />
-
                     <span className="mt-1 block text-[8px] font-bold">
                       PHOTO
                     </span>
@@ -670,16 +651,11 @@ export default function HajjahAdd() {
                 <p className="text-[10px] font-bold text-slate-700">
                   Hajjah Photo
                 </p>
-
                 <p className="mb-2 text-[9px] text-slate-400">
-                  JPG / PNG • Maximum 2MB
+                  JPG / PNG • Maximum 2MB • Safed background
                 </p>
-
                 <label className="inline-flex cursor-pointer rounded-md bg-emerald-600 px-3 py-1.5 text-[10px] font-bold text-white hover:bg-emerald-700">
-                  {photoPreview
-                    ? "Change Photo"
-                    : "Upload Photo"}
-
+                  {photoPreview ? "Change Photo" : "Upload Photo"}
                   <input
                     type="file"
                     accept="image/*"
@@ -689,147 +665,119 @@ export default function HajjahAdd() {
                 </label>
               </div>
             </div>
-          </section>
+          </Section>
 
-          {/* =====================================================
-              PASSPORT & MAHRAM
-          ===================================================== */}
-          <section className="mt-5 space-y-3">
-
-            <div className={sectionTitleClass}>
-              <FaPassport className="text-emerald-600" />
-              <span>
-                Passport & Mahram Details
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-
-              {/* Passport Number */}
-              <div>
-                <label className={labelClass}>
-                  <FaPassport className="text-emerald-600" />
-                  Passport Number *
-                </label>
-
+          {/* ================= PASSPORT ================= */}
+          <Section
+            title="Passport Details"
+            icon={<FaPassport className="text-emerald-600" />}
+          >
+            <div className={gridClass}>
+              <Field
+                label="Passport Number *"
+                icon={<FaPassport className="text-emerald-600" />}
+                error={errors.passportNo}
+              >
                 <input
                   type="text"
                   name="passportNo"
+                  maxLength={10}
                   value={formData.passportNo}
                   onChange={handleChange}
                   placeholder="A01234567"
-                  className={inputClass}
+                  className={fieldClass("passportNo")}
                 />
-              </div>
+              </Field>
 
-              {/* Passport Type */}
-              <div>
-                <label className={labelClass}>
-                  Passport Type
-                </label>
-
-                <select
-                  name="passportType"
-                  value={formData.passportType}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="Ordinary">
-                    Ordinary
-                  </option>
-                  <option value="Official">
-                    Official
-                  </option>
-                  <option value="Diplomatic">
-                    Diplomatic
-                  </option>
-                </select>
-              </div>
-
-              {/* Issue Date */}
-              <div>
-                <label className={labelClass}>
-                  Passport Issue Date
-                </label>
-
+              <Field
+                label="Issue Date"
+                error={errors.passportIssueDate}
+              >
                 <input
                   type="date"
                   name="passportIssueDate"
                   value={formData.passportIssueDate}
                   onChange={handleChange}
-                  className={inputClass}
+                  className={fieldClass("passportIssueDate")}
                 />
-              </div>
+              </Field>
 
-              {/* Expiry */}
-              <div>
-                <label className={labelClass}>
-                  Passport Expiry Date *
-                </label>
-
+              <Field
+                label="Expiry Date * (min 6 mash validity)"
+                error={errors.passportExpiry}
+              >
                 <input
                   type="date"
                   name="passportExpiry"
                   value={formData.passportExpiry}
                   onChange={handleChange}
+                  className={fieldClass("passportExpiry")}
+                />
+              </Field>
+
+              <Field label="Place of Issue">
+                <input
+                  type="text"
+                  name="passportIssuePlace"
+                  value={formData.passportIssuePlace}
+                  onChange={handleChange}
+                  placeholder="Dhaka"
                   className={inputClass}
                 />
-              </div>
+              </Field>
+            </div>
+          </Section>
 
-              {/* Mahram Name */}
-              <div>
-                <label className={labelClass}>
-                  <FaUserShield className="text-emerald-600" />
-                  Mahram Name
-                </label>
+          {/* ================= MAHRAM ================= */}
+          <Section
+            title={`Mahram Details${
+              formData.gender === "Female" ? " (Required)" : ""
+            }`}
+            icon={<FaUserShield className="text-emerald-600" />}
+          >
+            {showMahramWarning && (
+              <p className="rounded-lg bg-amber-50 px-3 py-2 text-[11px] text-amber-800">
+                45 bochorer kom boyoshi mohila hajjir jonno Mahram er shathe
+                jaoa dorkar. Mahram er tothyo thik moto din.
+              </p>
+            )}
 
+            <div className={gridClass}>
+              <Field
+                label={`Mahram Name${formData.gender === "Female" ? " *" : ""}`}
+                icon={<FaUserShield className="text-emerald-600" />}
+                error={errors.mahramName}
+              >
                 <input
                   type="text"
                   name="mahramName"
                   value={formData.mahramName}
                   onChange={handleChange}
                   placeholder="Mahram name"
-                  className={inputClass}
+                  className={fieldClass("mahramName")}
                 />
-              </div>
+              </Field>
 
-              {/* Relation */}
-              <div>
-                <label className={labelClass}>
-                  Relationship
-                </label>
-
+              <Field label="Relationship">
                 <select
                   name="mahramRelation"
                   value={formData.mahramRelation}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="Husband">
-                    Husband
-                  </option>
-                  <option value="Father">
-                    Father
-                  </option>
-                  <option value="Son">
-                    Son
-                  </option>
-                  <option value="Brother">
-                    Brother
-                  </option>
-                  <option value="Other">
-                    Other
-                  </option>
+                  <option value="Husband">Husband</option>
+                  <option value="Father">Father</option>
+                  <option value="Son">Son</option>
+                  <option value="Brother">Brother</option>
+                  <option value="Other">Other</option>
                 </select>
-              </div>
+              </Field>
 
-              {/* Mahram Mobile */}
-              <div>
-                <label className={labelClass}>
-                  <FaPhoneAlt className="text-emerald-600" />
-                  Mahram Mobile
-                </label>
-
+              <Field
+                label={`Mahram Mobile${formData.gender === "Female" ? " *" : ""}`}
+                icon={<FaPhoneAlt className="text-emerald-600" />}
+                error={errors.mahramMobile}
+              >
                 <input
                   type="tel"
                   name="mahramMobile"
@@ -837,175 +785,157 @@ export default function HajjahAdd() {
                   value={formData.mahramMobile}
                   onChange={handleChange}
                   placeholder="017XXXXXXXX"
+                  className={fieldClass("mahramMobile")}
+                />
+              </Field>
+
+              <Field
+                label="Mahram Passport No"
+                icon={<FaPassport className="text-emerald-600" />}
+              >
+                <input
+                  type="text"
+                  name="mahramPassportNo"
+                  maxLength={10}
+                  value={formData.mahramPassportNo}
+                  onChange={(e) => {
+                    setFormData((p) => ({
+                      ...p,
+                      mahramPassportNo: e.target.value
+                        .toUpperCase()
+                        .replace(/[^A-Z0-9]/g, ""),
+                    }));
+                  }}
+                  placeholder="A01234567"
                   className={inputClass}
                 />
-              </div>
+              </Field>
             </div>
-          </section>
+          </Section>
 
-          {/* =====================================================
-              HEALTH & EMERGENCY
-          ===================================================== */}
-          <section className="mt-5 space-y-3">
-
-            <div className={sectionTitleClass}>
-              <FaHeartbeat className="text-red-500" />
-              <span>
-                Health & Emergency Contact
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-
-              {/* Blood Group */}
-              <div>
-                <label className={labelClass}>
-                  <FaHeartbeat className="text-red-500" />
-                  Blood Group
-                </label>
-
+          {/* ================= HEALTH & EMERGENCY ================= */}
+          <Section
+            title="Health & Emergency Contact"
+            icon={<FaHeartbeat className="text-red-500" />}
+          >
+            <div className={gridClass}>
+              <Field
+                label="Blood Group"
+                icon={<FaHeartbeat className="text-red-500" />}
+              >
                 <select
                   name="bloodGroup"
                   value={formData.bloodGroup}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  {[
-                    "A+",
-                    "A-",
-                    "B+",
-                    "B-",
-                    "O+",
-                    "O-",
-                    "AB+",
-                    "AB-",
-                  ].map((bg) => (
-                    <option
-                      key={bg}
-                      value={bg}
-                    >
-                      {bg}
-                    </option>
-                  ))}
+                  {["A+", "A-", "B+", "B-", "O+", "O-", "AB+", "AB-"].map(
+                    (bg) => (
+                      <option key={bg} value={bg}>
+                        {bg}
+                      </option>
+                    )
+                  )}
                 </select>
-              </div>
+              </Field>
 
-              {/* Medical */}
-              <div className="md:col-span-2">
-                <label className={labelClass}>
-                  <FaNotesMedical className="text-red-500" />
-                  Medical Conditions
-                </label>
-
+              <Field
+                label="Medical Conditions"
+                icon={<FaNotesMedical className="text-red-500" />}
+                className="md:col-span-2"
+              >
                 <input
                   type="text"
                   name="medicalConditions"
                   value={formData.medicalConditions}
                   onChange={handleChange}
-                  placeholder="Diabetes, Blood Pressure, Asthma..."
+                  placeholder="Diabetes, Blood Pressure, Asthma... (na thakle khali rakhun)"
                   className={inputClass}
                 />
-              </div>
+              </Field>
 
-              {/* Emergency Name */}
-              <div>
-                <label className={labelClass}>
-                  Emergency Contact Name *
+              <Field
+                label="Meningitis Vaccine"
+                icon={<FaSyringe className="text-red-500" />}
+              >
+                <label className="flex h-[30px] cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-700">
+                  <input
+                    type="checkbox"
+                    name="meningitisVaccine"
+                    checked={formData.meningitisVaccine}
+                    onChange={handleChange}
+                    className="accent-emerald-600"
+                  />
+                  Vaccine neya hoyeche
                 </label>
+              </Field>
 
+              <Field
+                label="Emergency Contact Name *"
+                icon={<FaUserFriends className="text-emerald-600" />}
+                error={errors.emergencyContactName}
+              >
                 <input
                   type="text"
                   name="emergencyContactName"
-                  value={
-                    formData.emergencyContactName
-                  }
+                  value={formData.emergencyContactName}
                   onChange={handleChange}
                   placeholder="Contact person"
-                  className={inputClass}
+                  className={fieldClass("emergencyContactName")}
                 />
-              </div>
+              </Field>
 
-              {/* Relation */}
-              <div>
-                <label className={labelClass}>
-                  Emergency Relation
-                </label>
-
+              <Field label="Emergency Relation">
                 <select
                   name="emergencyContactRelation"
-                  value={
-                    formData.emergencyContactRelation
-                  }
+                  value={formData.emergencyContactRelation}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="Relative">
-                    Relative
-                  </option>
-                  <option value="Husband">
-                    Husband
-                  </option>
-                  <option value="Father">
-                    Father
-                  </option>
-                  <option value="Son">
-                    Son
-                  </option>
-                  <option value="Brother">
-                    Brother
-                  </option>
-                  <option value="Friend">
-                    Friend
-                  </option>
-                  <option value="Other">
-                    Other
-                  </option>
+                  {[
+                    "Relative",
+                    "Husband",
+                    "Father",
+                    "Son",
+                    "Brother",
+                    "Friend",
+                    "Other",
+                  ].map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
                 </select>
-              </div>
+              </Field>
 
-              {/* Emergency Phone */}
-              <div>
-                <label className={labelClass}>
-                  <FaPhoneAlt className="text-emerald-600" />
-                  Emergency Phone *
-                </label>
-
+              <Field
+                label="Emergency Phone *"
+                icon={<FaPhoneAlt className="text-emerald-600" />}
+                error={errors.emergencyContactPhone}
+              >
                 <input
                   type="tel"
                   name="emergencyContactPhone"
                   maxLength={11}
-                  value={
-                    formData.emergencyContactPhone
-                  }
+                  value={formData.emergencyContactPhone}
                   onChange={handleChange}
                   placeholder="017XXXXXXXX"
-                  className={inputClass}
+                  className={fieldClass("emergencyContactPhone")}
                 />
-              </div>
+              </Field>
             </div>
-          </section>
+          </Section>
 
-          {/* =====================================================
-              TRAVEL DETAILS
-          ===================================================== */}
-          <section className="mt-5 space-y-3">
-
-            <div className={sectionTitleClass}>
-              <FaPlane className="text-blue-600" />
-              <span>
-                Travel & Accommodation
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-
-              {/* Travel Date */}
-              <div>
-                <label className={labelClass}>
-                  <FaCalendarAlt className="text-blue-600" />
-                  Travel Date
-                </label>
-
+          {/* ================= TRAVEL ================= */}
+          <Section
+            title="Travel & Accommodation"
+            icon={<FaPlane className="text-blue-600" />}
+          >
+            <div className={gridClass}>
+              <Field
+                label="Travel Date (jodi thik thake)"
+                icon={<FaCalendarAlt className="text-blue-600" />}
+              >
                 <input
                   type="date"
                   name="travelDate"
@@ -1013,85 +943,50 @@ export default function HajjahAdd() {
                   onChange={handleChange}
                   className={inputClass}
                 />
-              </div>
+              </Field>
 
-              {/* Room */}
-              <div>
-                <label className={labelClass}>
-                  <FaBed className="text-blue-600" />
-                  Room Type
-                </label>
-
+              <Field
+                label="Room Type"
+                icon={<FaBed className="text-blue-600" />}
+              >
                 <select
                   name="roomType"
                   value={formData.roomType}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="Quad">
-                    Quad Sharing
-                  </option>
-                  <option value="Triple">
-                    Triple Sharing
-                  </option>
-                  <option value="Double">
-                    Double Sharing
-                  </option>
-                  <option value="Single">
-                    Single
-                  </option>
+                  <option value="Quad">Quad Sharing</option>
+                  <option value="Triple">Triple Sharing</option>
+                  <option value="Double">Double Sharing</option>
+                  <option value="Single">Single</option>
                 </select>
-              </div>
+              </Field>
 
-              {/* Food */}
-              <div>
-                <label className={labelClass}>
-                  <FaUtensils className="text-orange-500" />
-                  Food Preference
+              <Field label="Previous Hajj">
+                <label className="flex h-[30px] cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 text-xs text-slate-700">
+                  <input
+                    type="checkbox"
+                    name="previousHajj"
+                    checked={formData.previousHajj}
+                    onChange={handleChange}
+                    className="accent-emerald-600"
+                  />
+                  Ager Hajj korechen
                 </label>
+              </Field>
 
-                <select
-                  name="foodPreference"
-                  value={formData.foodPreference}
-                  onChange={handleChange}
-                  className={inputClass}
-                >
-                  <option value="Regular">
-                    Regular
-                  </option>
-                  <option value="Vegetarian">
-                    Vegetarian
-                  </option>
-                  <option value="Special">
-                    Special
-                  </option>
-                </select>
-              </div>
-
-              {/* Special Assistance */}
-              <div>
-                <label className={labelClass}>
-                  Special Assistance
-                </label>
-
+              <Field label="Special Assistance">
                 <input
                   type="text"
                   name="specialAssistance"
-                  value={
-                    formData.specialAssistance
-                  }
+                  value={formData.specialAssistance}
                   onChange={handleChange}
                   placeholder="Wheelchair / Other"
                   className={inputClass}
                 />
-              </div>
+              </Field>
 
-              {/* Notes */}
-              <div className="md:col-span-2 lg:col-span-4">
-                <label className={labelClass}>
-                  Notes
-                </label>
-
+              <Field label="Notes" className="md:col-span-2 lg:col-span-4">
                 <textarea
                   name="notes"
                   rows={2}
@@ -1100,305 +995,164 @@ export default function HajjahAdd() {
                   placeholder="Additional notes..."
                   className={`${inputClass} resize-none`}
                 />
-              </div>
+              </Field>
             </div>
-          </section>
+          </Section>
 
-          {/* =====================================================
-              PACKAGE & PAYMENT
-          ===================================================== */}
-          <section className="mt-5 space-y-3">
-
-            <div className={sectionTitleClass}>
-              <FaBoxes className="text-emerald-600" />
-              <span>
-                Package & Payment
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
-
-              {/* Package */}
-              <div>
-                <label className={labelClass}>
-                  <FaBoxes className="text-emerald-600" />
-                  Package Type
-                </label>
-
+          {/* ================= PACKAGE & PAYMENT ================= */}
+          <Section
+            title="Package & Payment"
+            icon={<FaBoxes className="text-emerald-600" />}
+          >
+            <div className={gridClass}>
+              <Field
+                label="Package Type"
+                icon={<FaBoxes className="text-emerald-600" />}
+              >
                 <select
                   name="packageType"
                   value={formData.packageType}
                   onChange={handleChange}
                   className={inputClass}
                 >
-                  <option value="Economy">
-                    Economy
-                  </option>
-                  <option value="Standard">
-                    Standard
-                  </option>
-                  <option value="VIP / Executive">
-                    VIP / Executive
-                  </option>
-                  <option value="Non-Shifting">
-                    Non-Shifting
-                  </option>
+                  <option value="Economy">Economy</option>
+                  <option value="Standard">Standard</option>
+                  <option value="VIP / Executive">VIP / Executive</option>
+                  <option value="Non-Shifting">Non-Shifting</option>
                 </select>
-              </div>
+              </Field>
 
-              {/* Total */}
-              <div>
-                <label className={labelClass}>
-                  Total Package Price
-                </label>
-
+              <Field
+                label="Total Package Price (৳) *"
+                error={errors.totalAmount}
+              >
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   name="totalAmount"
                   value={formData.totalAmount}
                   onChange={handleChange}
                   placeholder="0"
-                  className={inputClass}
+                  className={fieldClass("totalAmount")}
                 />
-              </div>
+              </Field>
 
-              {/* Paid */}
-              <div>
-                <label className={labelClass}>
-                  Paid Deposit
-                </label>
-
+              <Field
+                label="Paid Deposit (৳)"
+                error={errors.paidAmount}
+              >
                 <input
-                  type="number"
+                  type="text"
+                  inputMode="numeric"
                   name="paidAmount"
                   value={formData.paidAmount}
                   onChange={handleChange}
                   placeholder="0"
-                  className={inputClass}
+                  className={fieldClass("paidAmount")}
                 />
-              </div>
+              </Field>
 
-              {/* Bkash */}
-              <div>
-                <label className={labelClass}>
-                  <FaWallet className="text-pink-600" />
-                  Bkash Number *
-                </label>
-
+              <Field label="Due (৳)">
                 <input
-                  type="tel"
-                  name="bkashNumber"
-                  maxLength={11}
-                  value={formData.bkashNumber}
+                  readOnly
+                  value={due}
+                  className={`${inputClass} bg-slate-100 font-semibold ${
+                    due > 0 ? "text-red-600" : "text-emerald-600"
+                  }`}
+                />
+              </Field>
+
+              <Field
+                label="Payment Method"
+                icon={<FaWallet className="text-pink-600" />}
+              >
+                <select
+                  name="paymentMethod"
+                  value={formData.paymentMethod}
                   onChange={handleChange}
-                  placeholder="017XXXXXXXX"
+                  className={inputClass}
+                >
+                  <option value="bKash">bKash</option>
+                  <option value="Nagad">Nagad</option>
+                  <option value="Bank">Bank Transfer</option>
+                  <option value="Cash">Cash</option>
+                </select>
+              </Field>
+
+              {formData.paymentMethod !== "Cash" && (
+                <>
+                  <Field
+                    label="Payment Number"
+                    error={errors.paymentNumber}
+                  >
+                    <input
+                      type="tel"
+                      name="paymentNumber"
+                      maxLength={11}
+                      value={formData.paymentNumber}
+                      onChange={handleChange}
+                      placeholder="017XXXXXXXX"
+                      className={fieldClass("paymentNumber")}
+                    />
+                  </Field>
+
+                  <Field
+                    label="Transaction ID"
+                    error={errors.transactionId}
+                  >
+                    <input
+                      type="text"
+                      name="transactionId"
+                      value={formData.transactionId}
+                      onChange={handleChange}
+                      placeholder="TrxID"
+                      className={fieldClass("transactionId")}
+                    />
+                  </Field>
+                </>
+              )}
+
+              <Field label="Referred By (Agent / Staff)">
+                <input
+                  type="text"
+                  name="referredBy"
+                  value={formData.referredBy}
+                  onChange={handleChange}
+                  placeholder="Optional"
                   className={inputClass}
                 />
-              </div>
+              </Field>
             </div>
-          </section>
+          </Section>
 
-          {/* =========================
-              SUBMIT
-          ========================= */}
-          <div className="mt-5 flex justify-end border-t border-slate-100 pt-4">
+          {/* ================= SUBMIT ================= */}
+          <div className="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <label
+              className={`flex cursor-pointer items-start gap-2 text-[11px] ${
+                errors.agree ? "text-red-600" : "text-slate-600"
+              }`}
+            >
+              <input
+                type="checkbox"
+                name="agree"
+                checked={formData.agree}
+                onChange={handleChange}
+                className="mt-0.5 accent-emerald-600"
+              />
+              Ami ghoshona korchi je upore deya sob tothyo shothik ebong
+              agency er shorto o niyom mene nilam.
+            </label>
 
             <button
               type="submit"
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-amber-600 px-6 py-2.5 text-xs font-bold text-white shadow-md transition hover:opacity-95"
+              disabled={submitting}
+              className="flex items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-emerald-600 to-amber-600 px-6 py-2.5 text-xs font-bold text-white shadow-md transition hover:opacity-95 disabled:cursor-not-allowed disabled:opacity-60"
             >
               <FaPaperPlane className="text-[10px]" />
-              Complete Registration
+              {submitting ? "Submitting..." : "Complete Registration"}
             </button>
           </div>
         </form>
-
-        {/* =====================================================
-            REGISTERED HAJJAH LIST
-        ===================================================== */}
-        <section className="rounded-2xl border border-white/80 bg-white/90 p-4 shadow-xl backdrop-blur-md">
-
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-sm font-bold text-slate-900">
-              Registered Hajjah List{" "}
-              <span className="text-slate-400">
-                ({entries.length})
-              </span>
-            </h2>
-          </div>
-
-          {entries.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-slate-300 py-6 text-center text-xs text-slate-400">
-              Ekhono kono registration
-              somponno hoyni.
-            </p>
-          ) : (
-            <div className="overflow-x-auto">
-
-              <table className="w-full min-w-[950px] text-left text-[11px] text-slate-600">
-
-                <thead className="bg-slate-100/80 text-[9px] uppercase text-slate-500">
-                  <tr>
-                    <th className="px-2 py-2">
-                      Sl
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Photo
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Name
-                    </th>
-
-                    <th className="px-2 py-2">
-                      NID
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Passport
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Mobile
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Mahram
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Travel
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Package
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Payment
-                    </th>
-
-                    <th className="px-2 py-2">
-                      Action
-                    </th>
-                  </tr>
-                </thead>
-
-                <tbody className="divide-y divide-slate-100">
-
-                  {entries.map((item) => (
-                    <tr
-                      key={item.slNo}
-                      className="hover:bg-slate-50/80"
-                    >
-                      {/* Sl */}
-                      <td className="px-2 py-2 font-semibold">
-                        {item.slNo}
-                      </td>
-
-                      {/* Photo */}
-                      <td className="px-2 py-2">
-                        {item.photoUrl ? (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={item.photoUrl}
-                            alt={item.name}
-                            className="h-7 w-7 rounded-full object-cover"
-                          />
-                        ) : (
-                          <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100 text-[10px] font-bold text-emerald-700">
-                            {item.name.charAt(0)}
-                          </div>
-                        )}
-                      </td>
-
-                      {/* Name */}
-                      <td className="px-2 py-2 font-semibold text-slate-900">
-                        {item.name}
-                      </td>
-
-                      {/* NID */}
-                      <td className="px-2 py-2">
-                        {item.nidNo}
-                      </td>
-
-                      {/* Passport */}
-                      <td className="px-2 py-2">
-                        {item.passportNo}
-                      </td>
-
-                      {/* Mobile */}
-                      <td className="px-2 py-2">
-                        {item.mobileNo}
-                      </td>
-
-                      {/* Mahram */}
-                      <td className="px-2 py-2">
-                        {item.mahramName ||
-                          "N/A"}
-                        <br />
-                        <span className="text-[9px] text-slate-400">
-                          {
-                            item.mahramRelation
-                          }
-                        </span>
-                      </td>
-
-                      {/* Travel */}
-                      <td className="px-2 py-2">
-                        {item.travelDate ||
-                          "N/A"}
-                      </td>
-
-                      {/* Package */}
-                      <td className="px-2 py-2">
-                        <span className="rounded bg-emerald-50 px-1.5 py-0.5 text-[9px] font-bold text-emerald-700">
-                          {
-                            item.packageType
-                          }
-                        </span>
-                      </td>
-
-                      {/* Payment */}
-                      <td className="px-2 py-2">
-                        <span className="font-semibold text-emerald-600">
-                          ৳
-                          {
-                            item.paidAmount
-                          }
-                        </span>
-                        <br />
-                        <span className="text-[9px] text-slate-400">
-                          Total: ৳
-                          {
-                            item.totalAmount
-                          }
-                        </span>
-                      </td>
-
-                      {/* Action */}
-                      <td className="px-2 py-2">
-                        <button
-                          type="button"
-                          onClick={() =>
-                            handleRemove(
-                              item.slNo
-                            )
-                          }
-                          className="rounded-md p-1.5 text-slate-400 transition hover:bg-red-50 hover:text-red-600"
-                        >
-                          <FaTrash />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-
-                </tbody>
-              </table>
-            </div>
-          )}
-        </section>
       </div>
     </div>
   );
